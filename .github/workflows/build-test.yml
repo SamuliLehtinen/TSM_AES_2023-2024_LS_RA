@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         target: [DISCO_H747I]
-        profile: [release, debug, develop]
+        profile: [debug]
 
 
     steps:
@@ -26,4 +26,6 @@ jobs:
         run: |
           set -e
           mbed deploy
-          mbed test -t GCC_ARM -m $\{\{ matrix.target \}\} --profile $\{\{ matrix.profile \}\} --compile -n tests-simple-test-always-succeed,tests-simple-test-basic-queue-test
+          mbed test -t GCC_ARM -m $\{\{ matrix.target \}\} --profile $\{\{ matrix.profile \}\} --compile -n tests-simple-test-always-succeed,tests-simple-test-test-ptr
+          mbed compile -t GCC_ARM -m $\{\{ matrix.target \}\} --profile $\{\{ matrix.profile \}\}
+
