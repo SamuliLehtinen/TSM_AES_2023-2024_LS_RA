@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        target: [K64F, DISCO_L475VG_IOT01A]
+        target: [K64F, DISCO_H747I]
         profile: [release, debug, develop]
 
 
