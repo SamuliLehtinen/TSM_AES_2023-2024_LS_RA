@@ -4,3 +4,5 @@ BUILD
 projectfiles
 *.py*
 mbed-os
+disco_h747i
+advdembsof_library
