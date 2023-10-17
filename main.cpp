@@ -15,7 +15,7 @@ int main() {
 #ifdef LED1
   DigitalOut led(LED1);
 #else
-  bool led;
+  bool led = false;
 #endif
 
   while (true) {
