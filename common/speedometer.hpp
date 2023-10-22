@@ -30,60 +30,61 @@
 namespace bike_computer {
 
 class Speedometer {
-   public:
-    // Number of rotation count to wait before the device can deliver a speed
-    static constexpr uint32_t kInitialRotationCount = 10;
+public:
+  // Number of rotation count to wait before the device can deliver a speed
+  static constexpr uint32_t kInitialRotationCount = 10;
 
-    explicit Speedometer(Timer& timer);  // NOLINT(runtime/references)
+  explicit Speedometer(Timer &timer); // NOLINT(runtime/references)
 
-    // method used for setting the current pedal rotation time
-    void setCurrentRotationTime(const std::chrono::milliseconds& currentRotationTime);
+  // method used for setting the current pedal rotation time
+  void
+  setCurrentRotationTime(const std::chrono::milliseconds &currentRotationTime);
 
-    // method used for setting/getting the current gear
-    void setGearSize(uint8_t gearSize);
+  // method used for setting/getting the current gear
+  void setGearSize(uint8_t gearSize);
 
-    // method called for getting the current speed (expressed in km / h)
-    float getCurrentSpeed() const;
+  // method called for getting the current speed (expressed in km / h)
+  float getCurrentSpeed() const;
 
-    // method called for getting the current traveled distance (expressed in km)
-    float getDistance();
+  // method called for getting the current traveled distance (expressed in km)
+  float getDistance();
 
-    // method called for resetting the traveled distance
-    void reset();
+  // method called for resetting the traveled distance
+  void reset();
 
-    // methods used for tests only
+  // methods used for tests only
 #if defined(MBED_TEST_MODE)
-    uint8_t getGearSize() const;
-    float getWheelCircumference() const;
-    float getTraySize() const;
-    std::chrono::milliseconds getCurrentPedalRotationTime() const;
-#endif  // defined(MBED_TEST_MODE)
+  uint8_t getGearSize() const;
+  float getWheelCircumference() const;
+  float getTraySize() const;
+  std::chrono::milliseconds getCurrentPedalRotationTime() const;
+#endif // defined(MBED_TEST_MODE)
 
-   private:
-    // private methods
-    void computeSpeed();
-    void computeDistance();
+private:
+  // private methods
+  void computeSpeed();
+  void computeDistance();
 
-    // definition of task period time
-    static constexpr std::chrono::milliseconds kTaskPeriod = 400ms;
-    // definition of task execution time
-    static constexpr std::chrono::microseconds kTaskRunTime = 200000us;
+  // definition of task period time
+  static constexpr std::chrono::milliseconds kTaskPeriod = 400ms;
+  // definition of task execution time
+  static constexpr std::chrono::microseconds kTaskRunTime = 200000us;
 
-    // constants related to speed computation
-    static constexpr float kWheelCircumference   = 2.1f;
-    static constexpr uint8_t kTraySize           = 50;
-    std::chrono::microseconds _lastTime          = std::chrono::microseconds::zero();
-    std::chrono::milliseconds _pedalRotationTime = kInitialPedalRotationTime;
+  // constants related to speed computation
+  static constexpr float kWheelCircumference = 2.1f;
+  static constexpr uint8_t kTraySize = 50;
+  std::chrono::microseconds _lastTime = std::chrono::microseconds::zero();
+  std::chrono::milliseconds _pedalRotationTime = kInitialPedalRotationTime;
 
-    // data members
-    Timer& _timer;
-    LowPowerTicker _ticker;
-    float _currentSpeed = 0.0f;
-    Mutex _totalDistanceMutex;
-    float _totalDistance = 0.0f;
-    uint8_t _gearSize    = 1;
+  // data members
+  Timer &_timer;
+  LowPowerTicker _ticker;
+  float _currentSpeed = 0.0f;
+  Mutex _totalDistanceMutex;
+  float _totalDistance = 0.0f;
+  uint8_t _gearSize = 1;
 
-    Thread _thread;
+  Thread _thread;
 };
 
-}  // namespace bike_computer
+} // namespace bike_computer

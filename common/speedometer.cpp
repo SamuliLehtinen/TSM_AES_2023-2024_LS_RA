@@ -33,54 +33,54 @@
 
 #if MBED_CONF_MBED_TRACE_ENABLE
 #define TRACE_GROUP "Speedometer"
-#endif  // MBED_CONF_MBED_TRACE_ENABLE
+#endif // MBED_CONF_MBED_TRACE_ENABLE
 
 namespace bike_computer {
 
-Speedometer::Speedometer(Timer& timer) : _timer(timer) {
-    // update _lastTime
-    _lastTime = _timer.elapsed_time();
+Speedometer::Speedometer(Timer &timer) : _timer(timer) {
+  // update _lastTime
+  _lastTime = _timer.elapsed_time();
 }
 
 void Speedometer::setCurrentRotationTime(
-    const std::chrono::milliseconds& currentRotationTime) {
-    if (_pedalRotationTime != currentRotationTime) {
-        // compute distance before changing the rotation time
-        computeDistance();
+    const std::chrono::milliseconds &currentRotationTime) {
+  if (_pedalRotationTime != currentRotationTime) {
+    // compute distance before changing the rotation time
+    computeDistance();
 
-        // change pedal rotation time
-        _pedalRotationTime = currentRotationTime;
+    // change pedal rotation time
+    _pedalRotationTime = currentRotationTime;
 
-        // compute speed with the new pedal rotation time
-        computeSpeed();
-    }
+    // compute speed with the new pedal rotation time
+    computeSpeed();
+  }
 }
 
 void Speedometer::setGearSize(uint8_t gearSize) {
-    if (_gearSize != gearSize) {
-        // compute distance before chaning the gear size
-        computeDistance();
+  if (_gearSize != gearSize) {
+    // compute distance before chaning the gear size
+    computeDistance();
 
-        // change gear size
-        _gearSize = gearSize;
+    // change gear size
+    _gearSize = gearSize;
 
-        // compute speed with the new gear size
-        computeSpeed();
-    }
+    // compute speed with the new gear size
+    computeSpeed();
+  }
 }
 
 float Speedometer::getCurrentSpeed() const { return _currentSpeed; }
 
 float Speedometer::getDistance() {
-    // make sure to update the distance traveled
-    computeDistance();
-    return _totalDistance;
+  // make sure to update the distance traveled
+  computeDistance();
+  return _totalDistance;
 }
 
 void Speedometer::reset() {
-    _totalDistanceMutex.lock();
-    _totalDistance = 0.0f;
-    _totalDistanceMutex.unlock();
+  _totalDistanceMutex.lock();
+  _totalDistance = 0.0f;
+  _totalDistanceMutex.unlock();
 }
 
 #if defined(MBED_TEST_MODE)
@@ -91,51 +91,58 @@ float Speedometer::getWheelCircumference() const { return kWheelCircumference; }
 float Speedometer::getTraySize() const { return kTraySize; }
 
 std::chrono::milliseconds Speedometer::getCurrentPedalRotationTime() const {
-    return _pedalRotationTime;
+  return _pedalRotationTime;
 }
 
-#endif  // defined(MBED_TEST_MODE)
+#endif // defined(MBED_TEST_MODE)
 
 void Speedometer::computeSpeed() {
-    // For computing the speed given a rear gear (braquet), one must divide the size of
-    // the tray (plateau) by the size of the rear gear (pignon arrière), and then multiply
-    // the result by the circumference of the wheel. Example: tray = 50, rear gear = 15.
-    // Distance run with one pedal turn (wheel circumference = 2.10 m) = 50/15 * 2.1 m
-    // = 6.99m If you ride at 80 pedal turns / min, you run a distance of 6.99 * 80 / min
-    // ~= 560 m / min = 33.6 km/h
+  // For computing the speed given a rear gear (braquet), one must divide the
+  // size of the tray (plateau) by the size of the rear gear (pignon arrière),
+  // and then multiply the result by the circumference of the wheel. Example:
+  // tray = 50, rear gear = 15. Distance run with one pedal turn (wheel
+  // circumference = 2.10 m) = 50/15 * 2.1 m = 6.99m If you ride at 80 pedal
+  // turns / min, you run a distance of 6.99 * 80 / min
+  // ~= 560 m / min = 33.6 km/h
 
-    float distancePerPedalRotation = (static_cast<float>(kTraySize) / static_cast<float>(_gearSize)) * kWheelCircumference,
+  float distancePerPedalRotation =
+            (static_cast<float>(kTraySize) / static_cast<float>(_gearSize)) *
+            kWheelCircumference,
 
-    _currentSpeed =  (distancePerPedalRotation / std::chrono::duration_cast<std::chrono::milliseconds>(_pedalRotationTime).count()) * 3600.f;
-    
-    tr_debug("New calculated speed is %f", _currentSpeed);
+        _currentSpeed = (distancePerPedalRotation /
+                         std::chrono::duration_cast<std::chrono::milliseconds>(
+                             _pedalRotationTime)
+                             .count()) *
+                        3600.f;
+
+  tr_debug("New calculated speed is %f", _currentSpeed);
 }
 
 void Speedometer::computeDistance() {
-    // For computing the speed given a rear gear (braquet), one must divide the size of
-    // the tray (plateau) by the size of the rear gear (pignon arrière), and then multiply
-    // the result by the circumference of the wheel. Example: tray = 50, rear gear = 15.
-    // Distance run with one pedal turn (wheel circumference = 2.10 m) = 50/15 * 2.1 m
-    // = 6.99m If you ride at 80 pedal turns / min, you run a distance of 6.99 * 80 / min
-    // ~= 560 m / min = 33.6 km/h. We then multiply the speed by the time for getting the
-    // distance traveled.
+  // For computing the speed given a rear gear (braquet), one must divide the
+  // size of the tray (plateau) by the size of the rear gear (pignon arrière),
+  // and then multiply the result by the circumference of the wheel. Example:
+  // tray = 50, rear gear = 15. Distance run with one pedal turn (wheel
+  // circumference = 2.10 m) = 50/15 * 2.1 m = 6.99m If you ride at 80 pedal
+  // turns / min, you run a distance of 6.99 * 80 / min
+  // ~= 560 m / min = 33.6 km/h. We then multiply the speed by the time for
+  // getting the distance traveled.
 
-    std::chrono::microseconds currentTime = _timer.elapsed_time();
-    const std::chrono::microseconds elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - _lastTime);
+  std::chrono::microseconds currentTime = _timer.elapsed_time();
+  const std::chrono::microseconds elapsedTime =
+      std::chrono::duration_cast<std::chrono::milliseconds>(currentTime -
+                                                            _lastTime);
 
-    float distance = _currentSpeed * elapsedTime.count() / 3600000.0;
+  float distance = _currentSpeed * elapsedTime.count() / 3600000.0;
 
-    _totalDistanceMutex.lock();
-    _totalDistance += distance;
-    _totalDistanceMutex.unlock();
+  _totalDistanceMutex.lock();
+  _totalDistance += distance;
+  _totalDistanceMutex.unlock();
 
-    tr_debug("Total distance %f, distance %f, speed %f, elapsed time %" PRIu64 "",
-             _totalDistance,
-             distance,
-             _currentSpeed,
-             elapsedTime.count());
+  tr_debug("Total distance %f, distance %f, speed %f, elapsed time %" PRIu64 "",
+           _totalDistance, distance, _currentSpeed, elapsedTime.count());
 
-    _lastTime = _timer.elapsed_time();
+  _lastTime = _timer.elapsed_time();
 }
 
-}  // namespace bike_computer
+} // namespace bike_computer
