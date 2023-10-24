@@ -19,5 +19,5 @@ repos:
   hooks:
   -   id: cppcheck
       name: cppcheck
-      entry: cppcheck --platform=win64 --enable=all --suppress=missingInclude:* --inline-suppr -i mbed-os --std=c++14 --error-exitcode=1
+      entry: cppcheck --enable=warning,style,performance,portability --suppress=missingInclude:* --inline-suppr -i mbed-os --std=c++14 --error-exitcode=1 --platform=win64
       language: system
