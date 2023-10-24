@@ -1,9 +1,4 @@
-// includes come here
 #include "reset_device.hpp"
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 
 #if defined(TARGET_DISCO_H747I)
 #define PUSH_BUTTON BUTTON1

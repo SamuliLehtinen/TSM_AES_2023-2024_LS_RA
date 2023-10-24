@@ -133,7 +133,7 @@ void Speedometer::computeDistance() {
       std::chrono::duration_cast<std::chrono::milliseconds>(currentTime -
                                                             _lastTime);
 
-  float distance = _currentSpeed * elapsedTime.count() / 3600000.0;
+  float distance = _currentSpeed * elapsedTime.count() / 3600000000.0;
 
   _totalDistanceMutex.lock();
   _totalDistance += distance;
