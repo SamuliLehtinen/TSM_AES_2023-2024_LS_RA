@@ -32,20 +32,20 @@ PedalDevice::PedalDevice(Timer& timer) : _timer(timer) {}
 std::chrono::milliseconds PedalDevice::getCurrentRotationTime() {
     std::chrono::microseconds initialTime = _timer.elapsed_time();
     std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
-    
+
     while (elapsedTime < kTaskRunTime) {
         disco::Joystick::State joystickState =
                     disco::Joystick::getInstance().getState();
 
                 switch (joystickState) {
                     case disco::Joystick::State::LeftPressed:
-                        if (initialTime > bike_computer::kMinPedalRotationTime) {
+                        if (_pedalRotationTime > bike_computer::kMinPedalRotationTime) {
                             decreaseRotationSpeed();
                         }
                         break;
 
                     case disco::Joystick::State::RightPressed:
-                        if (initialTime < bike_computer::kMaxPedalRotationTime) {
+                        if (_pedalRotationTime < bike_computer::kMaxPedalRotationTime) {
                             increaseRotationSpeed();
                         }
                         break;
@@ -55,6 +55,7 @@ std::chrono::milliseconds PedalDevice::getCurrentRotationTime() {
                 }
         elapsedTime = _timer.elapsed_time() - initialTime;
     }
+    
     return _pedalRotationTime;
 }
 
@@ -64,7 +65,7 @@ void PedalDevice::increaseRotationSpeed(){
 
 
 void PedalDevice::decreaseRotationSpeed(){
-    _pedalRotationTime += bike_computer::kDeltaPedalRotationTime;   
+    _pedalRotationTime -= bike_computer::kDeltaPedalRotationTime;   
 }  
 
 }  // namespace static_scheduling
