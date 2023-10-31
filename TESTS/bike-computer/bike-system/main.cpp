@@ -36,48 +36,46 @@ using namespace utest::v1;
 
 // test_bike_system handler function
 static void test_bike_system() {
-    // create the BikeSystem instance
-    static_scheduling::BikeSystem bikeSystem;
+  // create the BikeSystem instance
+  static_scheduling::BikeSystem bikeSystem;
 
-    // run the bike system in a separate thread
-    Thread thread;
-    thread.start(callback(&bikeSystem, &static_scheduling::BikeSystem::start));
+  // run the bike system in a separate thread
+  Thread thread;
+  thread.start(callback(&bikeSystem, &static_scheduling::BikeSystem::start));
 
-    // let the bike system run for 20 secs
-    ThisThread::sleep_for(20s);
+  // let the bike system run for 20 secs
+  ThisThread::sleep_for(20s);
 
-    // stop the bike system
-    bikeSystem.stop();
+  // stop the bike system
+  bikeSystem.stop();
 
-    // check whether scheduling was correct
-    // Order is kGearTaskIndex, kSpeedTaskIndex, kTemperatureTaskIndex,
-    //          kResetTaskIndex, kDisplayTask1Index, kDisplayTask2Index
-    constexpr std::chrono::microseconds taskComputationTimes[] = {
-        100000us, 200000us, 100000us, 100000us, 200000us, 100000us};
-    constexpr std::chrono::microseconds taskPeriods[] = {
-        800000us, 400000us, 1600000us, 800000us, 1600000us, 1600000us};
+  // check whether scheduling was correct
+  // Order is kGearTaskIndex, kSpeedTaskIndex, kTemperatureTaskIndex,
+  //          kResetTaskIndex, kDisplayTask1Index, kDisplayTask2Index
+  constexpr std::chrono::microseconds taskComputationTimes[] = {
+      100000us, 200000us, 100000us, 100000us, 200000us, 100000us};
+  constexpr std::chrono::microseconds taskPeriods[] = {
+      800000us, 400000us, 1600000us, 800000us, 1600000us, 1600000us};
 
-    // allow for 2 msecs offset
-    uint64_t deltaUs = 2000;
-    for (uint8_t taskIndex = 0; taskIndex < advembsof::TaskLogger::kNbrOfTasks;
-         taskIndex++) {
-        TEST_ASSERT_UINT64_WITHIN(
-            deltaUs,
-            taskPeriods[taskIndex].count(),
-            bikeSystem.getTaskLogger().getPeriod(taskIndex).count());
-        TEST_ASSERT_UINT64_WITHIN(
-            deltaUs,
-            taskComputationTimes[taskIndex].count(),
-            bikeSystem.getTaskLogger().getComputationTime(taskIndex).count());
-    }
+  // allow for 2 msecs offset
+  uint64_t deltaUs = 2000;
+  for (uint8_t taskIndex = 0; taskIndex < advembsof::TaskLogger::kNbrOfTasks;
+       taskIndex++) {
+    TEST_ASSERT_UINT64_WITHIN(
+        deltaUs, taskPeriods[taskIndex].count(),
+        bikeSystem.getTaskLogger().getPeriod(taskIndex).count());
+    TEST_ASSERT_UINT64_WITHIN(
+        deltaUs, taskComputationTimes[taskIndex].count(),
+        bikeSystem.getTaskLogger().getComputationTime(taskIndex).count());
+  }
 }
 
 static utest::v1::status_t greentea_setup(const size_t number_of_cases) {
-    // Here, we specify the timeout (60s) and the host test (a built-in host test or the
-    // name of our Python file)
-    GREENTEA_SETUP(180, "default_auto");
+  // Here, we specify the timeout (60s) and the host test (a built-in host test
+  // or the name of our Python file)
+  GREENTEA_SETUP(180, "default_auto");
 
-    return greentea_test_setup_handler(number_of_cases);
+  return greentea_test_setup_handler(number_of_cases);
 }
 
 // List of test cases in this file

@@ -10,14 +10,14 @@
 
 #if defined(MBED_CONF_MBED_TRACE_ENABLE)
 #define TRACE_GROUP "MAIN"
-#endif  // MBED_CONF_MBED_TRACE_ENAB
+#endif // MBED_CONF_MBED_TRACE_ENAB
 
 #if !MBED_TEST_MODE
 int main() {
 #if defined(MBED_CONF_MBED_TRACE_ENABLE)
-    mbed_trace_init();
+  mbed_trace_init();
 #endif
-    static_scheduling::BikeSystem bikeSystem;
-    bikeSystem.start();
+  static_scheduling::BikeSystem bikeSystem;
+  bikeSystem.start();
 }
 #endif
