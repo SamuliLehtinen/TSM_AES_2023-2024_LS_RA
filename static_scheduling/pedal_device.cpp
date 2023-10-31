@@ -32,40 +32,44 @@ PedalDevice::PedalDevice(Timer& timer) : _timer(timer) {}
 std::chrono::milliseconds PedalDevice::getCurrentRotationTime() {
     std::chrono::microseconds initialTime = _timer.elapsed_time();
     std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
+    bool hasChanged = false;
+    if(!hasChanged){
+        while (elapsedTime < kTaskRunTime) {
+            disco::Joystick::State joystickState =
+                        disco::Joystick::getInstance().getState();
 
-    while (elapsedTime < kTaskRunTime) {
-        disco::Joystick::State joystickState =
-                    disco::Joystick::getInstance().getState();
+                    switch (joystickState) {
+                        case disco::Joystick::State::LeftPressed:
+                            if (_pedalRotationTime < bike_computer::kMaxPedalRotationTime) {
+                                decreaseRotationSpeed();
+                                hasChanged = true;
+                            }
+                            break;
 
-                switch (joystickState) {
-                    case disco::Joystick::State::LeftPressed:
-                        if (_pedalRotationTime > bike_computer::kMinPedalRotationTime) {
-                            decreaseRotationSpeed();
-                        }
-                        break;
+                        case disco::Joystick::State::RightPressed:
+                            if (_pedalRotationTime > bike_computer::kMinPedalRotationTime) {
+                                increaseRotationSpeed();
+                                hasChanged = true;
+                            }
+                            break;
 
-                    case disco::Joystick::State::RightPressed:
-                        if (_pedalRotationTime < bike_computer::kMaxPedalRotationTime) {
-                            increaseRotationSpeed();
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-        elapsedTime = _timer.elapsed_time() - initialTime;
+                        default:
+                            break;
+                    }
+            elapsedTime = _timer.elapsed_time() - initialTime;
+        }
     }
     
     return _pedalRotationTime;
 }
 
 void PedalDevice::increaseRotationSpeed(){
-    _pedalRotationTime += bike_computer::kDeltaPedalRotationTime;
+    _pedalRotationTime -= bike_computer::kDeltaPedalRotationTime;
 }
 
 
 void PedalDevice::decreaseRotationSpeed(){
-    _pedalRotationTime -= bike_computer::kDeltaPedalRotationTime;   
+    _pedalRotationTime += bike_computer::kDeltaPedalRotationTime;   
 }  
 
 }  // namespace static_scheduling
