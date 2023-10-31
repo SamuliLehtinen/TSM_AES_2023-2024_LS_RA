@@ -105,17 +105,17 @@ void Speedometer::computeSpeed() {
   // turns / min, you run a distance of 6.99 * 80 / min
   // ~= 560 m / min = 33.6 km/h
 
-  float distancePerPedalRotation =
-      (static_cast<float>(kTraySize) / static_cast<float>(_gearSize)) *
-      kWheelCircumference;
+   
+    float distancePerPedalRotation =
+        (static_cast<float>(kTraySize) / static_cast<float>(_gearSize)) *
+        kWheelCircumference;
 
-  _currentSpeed =
-      (distancePerPedalRotation /
-       std::chrono::duration_cast<std::chrono::milliseconds>(_pedalRotationTime)
-           .count()) *
-      3600.f;
+    _currentSpeed =
+        (distancePerPedalRotation * 3600.0f) /
+        std::chrono::duration_cast<std::chrono::milliseconds>(_pedalRotationTime).count();
+    
+    tr_debug("New speed is %f", _currentSpeed);
 
-  tr_debug("New calculated speed is %f", _currentSpeed);
 }
 
 void Speedometer::computeDistance() {
