@@ -56,7 +56,8 @@ BikeSystem::BikeSystem()
     : _gearDevice(_timer),
       _pedalDevice(_timer),
       _resetDevice(_timer),
-      _speedometer(_timer) {}
+      _speedometer(_timer),
+      _cpuLogger(_timer) {}
 
 void BikeSystem::start() {
     tr_info("Starting Super-Loop without event handling");
@@ -130,6 +131,9 @@ void BikeSystem::gearTask() {
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kGearTaskIndex, taskStartTime);
+
+    _cpuLogger.printStats();
+
 }
 
 void BikeSystem::speedDistanceTask() {
@@ -145,6 +149,8 @@ void BikeSystem::speedDistanceTask() {
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kSpeedTaskIndex, taskStartTime);
+    
+    _cpuLogger.printStats();    
 }
 
 void BikeSystem::temperatureTask() {
@@ -153,15 +159,12 @@ void BikeSystem::temperatureTask() {
     // no need to protect access to data members (single threaded)
     _currentTemperature = _sensorDevice.readTemperature();
 
-    // simulate task computation by waiting for the required task computation time
-
-    std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
-    while (elapsedTime < kTemperatureTaskComputationTime) {
-        elapsedTime = _timer.elapsed_time() - taskStartTime;
-    }
-
+    ThisThread::sleep_for(std::chrono::duration_cast<std::chrono::milliseconds>(kTemperatureTaskComputationTime - (_timer.elapsed_time() - taskStartTime)));
+   
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kTemperatureTaskIndex, taskStartTime);
+
+    _cpuLogger.printStats();
 }
 
 void BikeSystem::resetTask() {
@@ -176,6 +179,8 @@ void BikeSystem::resetTask() {
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kResetTaskIndex, taskStartTime);
+
+    _cpuLogger.printStats();
 }
 
 void BikeSystem::displayTask1() {
@@ -185,15 +190,12 @@ void BikeSystem::displayTask1() {
     _displayDevice.displaySpeed(_currentSpeed);
     _displayDevice.displayDistance(_traveledDistance);
 
-    // simulate task computation by waiting for the required task computation time
-
-    std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
-    while (elapsedTime < kDisplayTask1ComputationTime) {
-        elapsedTime = _timer.elapsed_time() - taskStartTime;
-    }
+    ThisThread::sleep_for(std::chrono::duration_cast<std::chrono::milliseconds>(kDisplayTask1ComputationTime - (_timer.elapsed_time() - taskStartTime)));
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kDisplayTask1Index, taskStartTime);
+
+    _cpuLogger.printStats();
 }
 
 void BikeSystem::displayTask2() {
@@ -201,14 +203,12 @@ void BikeSystem::displayTask2() {
 
     _displayDevice.displayTemperature(_currentTemperature);
 
-    // simulate task computation by waiting for the required task computation time
+    ThisThread::sleep_for(std::chrono::duration_cast<std::chrono::milliseconds>(kDisplayTask2ComputationTime - (_timer.elapsed_time() - taskStartTime)));
 
-    std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
-    while (elapsedTime < kDisplayTask2ComputationTime) {
-        elapsedTime = _timer.elapsed_time() - taskStartTime;
-    }
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kDisplayTask2Index, taskStartTime);
+    
+    _cpuLogger.printStats();
 }
 
 }  // namespace static_scheduling

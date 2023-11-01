@@ -27,6 +27,7 @@
 // from advembsof
 #include "display_device.hpp"
 #include "task_logger.hpp"
+#include "cpu_logger.hpp"
 
 // from common
 #include "sensor_device.hpp"
@@ -67,6 +68,7 @@ class BikeSystem {
     void resetTask();
     void displayTask1();
     void displayTask2();
+    
 
     // stop flag, used for stopping the super-loop (set in stop())
     bool _stopFlag = false;
@@ -93,6 +95,9 @@ class BikeSystem {
 
     // used for logging task info
     advembsof::TaskLogger _taskLogger;
+
+    // cpulogger to see use of cpu
+    advembsof::CPULogger _cpuLogger;
 };
 
 }  // namespace static_scheduling
