@@ -33,31 +33,31 @@ std::chrono::milliseconds PedalDevice::getCurrentRotationTime() {
     std::chrono::microseconds initialTime = _timer.elapsed_time();
     std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
     bool hasChanged = false;
-    if(!hasChanged){
-        while (elapsedTime < kTaskRunTime) {
+    while (elapsedTime < kTaskRunTime) {
+        if(!hasChanged){
             disco::Joystick::State joystickState =
                         disco::Joystick::getInstance().getState();
 
-                    switch (joystickState) {
-                        case disco::Joystick::State::LeftPressed:
-                            if (_pedalRotationTime < bike_computer::kMaxPedalRotationTime) {
-                                decreaseRotationSpeed();
-                                hasChanged = true;
-                            }
-                            break;
-
-                        case disco::Joystick::State::RightPressed:
-                            if (_pedalRotationTime > bike_computer::kMinPedalRotationTime) {
-                                increaseRotationSpeed();
-                                hasChanged = true;
-                            }
-                            break;
-
-                        default:
-                            break;
+            switch (joystickState) {
+                case disco::Joystick::State::LeftPressed:
+                    if (_pedalRotationTime < bike_computer::kMaxPedalRotationTime) {
+                        decreaseRotationSpeed();
+                        hasChanged = true;
                     }
-            elapsedTime = _timer.elapsed_time() - initialTime;
+                    break;
+
+                case disco::Joystick::State::RightPressed:
+                    if (_pedalRotationTime > bike_computer::kMinPedalRotationTime) {
+                        increaseRotationSpeed();
+                        hasChanged = true;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
         }
+        elapsedTime = _timer.elapsed_time() - initialTime;
     }
     
     return _pedalRotationTime;
