@@ -18,6 +18,6 @@ int main() {
   mbed_trace_init();
 #endif
   static_scheduling::BikeSystem bikeSystem;
-  bikeSystem.start();
+  bikeSystem.startWithEventQueue();
 }
 #endif

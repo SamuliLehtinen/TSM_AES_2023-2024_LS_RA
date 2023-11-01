@@ -52,6 +52,9 @@ class BikeSystem {
     // method called in main() for starting the system
     void start();
 
+    // method called in main() for starting the system with the event
+    void startWithEventQueue();
+
     // method called for stopping the system
     void stop();
 
@@ -68,7 +71,7 @@ class BikeSystem {
     void resetTask();
     void displayTask1();
     void displayTask2();
-    
+    void displayTask();
 
     // stop flag, used for stopping the super-loop (set in stop())
     bool _stopFlag = false;

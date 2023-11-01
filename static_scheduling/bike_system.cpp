@@ -51,6 +51,9 @@ static constexpr std::chrono::milliseconds kTemperatureTaskComputationTime = 100
 static constexpr std::chrono::milliseconds kDisplayTask2Period = 1600ms;
 static constexpr std::chrono::milliseconds kDisplayTask2Delay = 1200ms;
 static constexpr std::chrono::milliseconds kDisplayTask2ComputationTime    = 100ms;
+static constexpr std::chrono::milliseconds kDisplayTaskPeriod = 1600ms;
+static constexpr std::chrono::milliseconds kDisplayTaskDelay = 0ms;
+static constexpr std::chrono::milliseconds kDisplayTaskComputationTime    = 300ms;
 
 BikeSystem::BikeSystem()
     : _gearDevice(_timer),
@@ -95,6 +98,51 @@ void BikeSystem::start() {
     }
 }
 
+void BikeSystem::startWithEventQueue() {
+    tr_info("Starting Super-Loop with event handling");
+
+    init();
+
+    EventQueue eventQueue;
+
+    Event<void()> gearEvent(&eventQueue, callback(this, &BikeSystem::gearTask));
+    gearEvent.delay(kGearTaskDelay);
+    gearEvent.period(kGearTaskPeriod);
+    gearEvent.post();
+
+    Event<void()> speedEvent(&eventQueue, callback(this, &BikeSystem::speedDistanceTask));
+    speedEvent.delay(kSpeedDistanceTaskDelay);
+    speedEvent.period(kSpeedDistanceTaskPeriod);
+    speedEvent.post();
+
+    Event<void()> resetEvent(&eventQueue, callback(this, &BikeSystem::resetTask));
+    resetEvent.delay(kResetTaskDelay);
+    resetEvent.period(kResetTaskPeriod);
+    resetEvent.post();
+
+    Event<void()> temperatureEvent(&eventQueue, callback(this, &BikeSystem::temperatureTask));
+    temperatureEvent.delay(kTemperatureTaskDelay);
+    temperatureEvent.period(kTemperatureTaskPeriod);
+    temperatureEvent.post();
+
+    /*Event<void()> displayEvent(&eventQueue, callback(this, &BikeSystem::displayTask));
+    displayEvent.delay(kDisplayTaskDelay);
+    displayEvent.period(kDisplayTaskPeriod);
+    displayEvent.post();*/
+
+    Event<void()> displayEvent1(&eventQueue, callback(this, &BikeSystem::displayTask1));
+    displayEvent1.delay(kDisplayTask1Delay);
+    displayEvent1.period(kDisplayTask1Period);
+    displayEvent1.post();
+
+    Event<void()> displayEvent2(&eventQueue, callback(this, &BikeSystem::displayTask2));
+    displayEvent2.delay(kDisplayTask2Delay);
+    displayEvent2.period(kDisplayTask2Period);
+    displayEvent2.post();
+
+    eventQueue.dispatch_forever();
+
+}
 void BikeSystem::stop() { core_util_atomic_store_bool(&_stopFlag, true); }
 
 #if defined(MBED_TEST_MODE)
@@ -207,6 +255,22 @@ void BikeSystem::displayTask2() {
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kDisplayTask2Index, taskStartTime);
+    
+    _cpuLogger.printStats();
+}
+
+void BikeSystem::displayTask() {
+    auto taskStartTime = _timer.elapsed_time();
+
+    _displayDevice.displayGear(_currentGear);
+    _displayDevice.displaySpeed(_currentSpeed);
+    _displayDevice.displayDistance(_traveledDistance);
+    _displayDevice.displayTemperature(_currentTemperature);
+
+    ThisThread::sleep_for(std::chrono::duration_cast<std::chrono::milliseconds>(kDisplayTaskComputationTime - (_timer.elapsed_time() - taskStartTime)));
+
+    _taskLogger.logPeriodAndExecutionTime(
+        _timer, advembsof::TaskLogger::kDisplayTaskIndex, taskStartTime);
     
     _cpuLogger.printStats();
 }
