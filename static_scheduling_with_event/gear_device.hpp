@@ -46,7 +46,7 @@ class GearDevice {
     
    private:
     // data members
-    uint8_t _currentGear = bike_computer::kMinGear;
+    volatile uint8_t _currentGear = bike_computer::kMinGear;
 };
 
 }  // namespace static_scheduling
