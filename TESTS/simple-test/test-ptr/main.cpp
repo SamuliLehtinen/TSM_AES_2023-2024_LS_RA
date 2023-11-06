@@ -133,24 +133,31 @@ void test_uniquePtr_transfer() {
  * to release the object at the correct point
  */
 void test_rawPtr_destruction() {
-    
-    Test * myptr = nullptr;
+  Test* myPtr(nullptr);
 
-    // Sanity-check value of counter
-    TEST_ASSERT_EQUAL(0, Test::_instanceCount);
-    // create one Test variable
-    Test myTest1;
-    // assign myptr to the Test variable just created
-    myptr = &myTest1;
+  // Sanity-check value of counter
+  TEST_ASSERT_EQUAL(0, Test::_instanceCount);
 
-    // Check that their exist one instance of pointer
+  // allocate the raw pointer in a given scope
+  {
+    myPtr = new Test;
     TEST_ASSERT_EQUAL(1, Test::_instanceCount);
+    Test* myPtr2 = myPtr;
+    // still one instance only
+    TEST_ASSERT_EQUAL(1, Test::_instanceCount);
+    TEST_ASSERT_EQUAL(Test::kMagicNumber, myPtr->_value);
+    TEST_ASSERT(myPtr == myPtr2);
+  }
 
-    delete(myptr);
+  // no delete called yet
+  TEST_ASSERT_EQUAL(1, Test::_instanceCount);
 
-    // test that instance of pointer has been correctly deleted
-    TEST_ASSERT_EQUAL(0, Test::_instanceCount);
+  // call delete
+  delete myPtr;
+  myPtr = nullptr;
 
+  // delete was called -> the object must be destroyed
+  TEST_ASSERT_EQUAL(0, Test::_instanceCount);
 }
 
 
