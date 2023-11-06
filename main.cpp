@@ -2,11 +2,10 @@
  * Copyright (c) 2019 ARM Limited
  * SPDX-License-Identifier: Apache-2.0
  */
-#include <string>
 
 #include "mbed.h"
 #include "mbed_trace.h"
-#include "static_scheduling/bike_system.hpp"
+#include "static_scheduling_with_event/bike_system.hpp"
 
 #if defined(MBED_CONF_MBED_TRACE_ENABLE)
 #define TRACE_GROUP "MAIN"
@@ -17,7 +16,7 @@ int main() {
 #if defined(MBED_CONF_MBED_TRACE_ENABLE)
   mbed_trace_init();
 #endif
-  static_scheduling::BikeSystem bikeSystem;
+  static_scheduling_with_event::BikeSystem bikeSystem;
   bikeSystem.startWithEventQueue();
 }
 #endif

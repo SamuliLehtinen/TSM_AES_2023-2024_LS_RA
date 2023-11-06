@@ -31,7 +31,7 @@
 #define TRACE_GROUP "BikeSystem"
 #endif  // MBED_CONF_MBED_TRACE_ENABLE
 
-namespace static_scheduling {
+namespace static_scheduling_with_event {
 
 static constexpr std::chrono::milliseconds kGearTaskPeriod                   = 800ms;
 static constexpr std::chrono::milliseconds kGearTaskDelay                    = 0ms;
@@ -56,9 +56,9 @@ static constexpr std::chrono::milliseconds kDisplayTaskDelay                 = 1
 static constexpr std::chrono::milliseconds kDisplayTaskComputationTime       = 400ms;
 
 BikeSystem::BikeSystem()
-    : _gearDevice(_timer),
-      _pedalDevice(_timer),
-      _resetDevice(_timer),
+    : _gearDevice(),
+      _pedalDevice(),
+      _resetDevice(callback(this, &BikeSystem::onReset)),
       _speedometer(_timer),
       _cpuLogger(_timer) {}
 
@@ -143,6 +143,11 @@ void BikeSystem::startWithEventQueue() {
     eventQueue.dispatch_forever();
 }
 
+void BikeSystem::onReset() {
+    _resetTime = _timer.elapsed_time();
+    core_util_atomic_store_bool(&_resetFlag, true);
+}
+
 void BikeSystem::stop() { core_util_atomic_store_bool(&_stopFlag, true); }
 
 #if defined(MBED_TEST_MODE)
@@ -218,17 +223,16 @@ void BikeSystem::temperatureTask() {
 void BikeSystem::resetTask() {
     auto taskStartTime = _timer.elapsed_time();
 
-    if (_resetDevice.checkReset()) {
-        std::chrono::microseconds responseTime =
-            _timer.elapsed_time() - _resetDevice.getPressTime();
-        tr_info("Reset task: response time is %" PRIu64 " usecs", responseTime.count());
+    if (core_util_atomic_load_bool(&_resetFlag)) {
+        tr_info("Reset task: response time is %" PRIu64 " usecs",
+                (_timer.elapsed_time() - _resetTime).count());
         _speedometer.reset();
+
+        core_util_atomic_store_bool(&_resetFlag, false);
     }
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kResetTaskIndex, taskStartTime);
-
-    _cpuLogger.printStats();
 }
 
 void BikeSystem::displayTask1() {
