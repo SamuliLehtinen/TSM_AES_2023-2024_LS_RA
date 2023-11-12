@@ -104,8 +104,9 @@ class BikeSystem {
     // used for logging task info
     advembsof::TaskLogger _taskLogger;
 
-    // cpulogger to see use of cpu
+
     advembsof::CPULogger _cpuLogger;
+    
 };
 
 }  // namespace static_scheduling

@@ -12,6 +12,7 @@
 #endif // MBED_CONF_MBED_TRACE_ENAB
 
 #if !MBED_TEST_MODE
+
 int main() {
 #if defined(MBED_CONF_MBED_TRACE_ENABLE)
   mbed_trace_init();
