@@ -73,7 +73,7 @@ class BikeSystem {
     void displayTask1();
     void displayTask2();
     void displayTask();
-    void displayCPU();
+    void cpuTask();
 
     // stop flag, used for stopping the super-loop (set in stop())
     bool _stopFlag = false;

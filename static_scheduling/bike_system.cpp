@@ -81,7 +81,7 @@ void BikeSystem::start() {
         temperatureTask();
         displayTask2();
         speedDistanceTask();
-        resetTask();
+
 
         // register the time at the end of the cyclic schedule period and print the
         // elapsed time for the period
@@ -141,10 +141,10 @@ void BikeSystem::startWithEventQueue() {
     display2Event.post();
 
     #if !defined(MBED_TEST_MODE)
-        Event<void()> displayCPU(&eventQueue, callback(this, &BikeSystem::displayCPU));
-        display2Event.delay(kCPUTaskDelay);
-        display2Event.period(kCPUTaskPeriod);
-        display2Event.post();
+        Event<void()> cpuEvent(&eventQueue, callback(this, &BikeSystem::cpuTask));
+        cpuEvent.delay(kCPUTaskDelay);
+        cpuEvent.period(kCPUTaskPeriod);
+        cpuEvent.post();
     #endif
 
     eventQueue.dispatch_forever();
@@ -253,7 +253,7 @@ void BikeSystem::displayTask2() {
         _timer, advembsof::TaskLogger::kDisplayTask2Index, taskStartTime);
 }
 
-void BikeSystem::displayCPU() {
+void BikeSystem::cpuTask() {
     _cpuLogger.printStats();
 }
 }  // namespace static_scheduling

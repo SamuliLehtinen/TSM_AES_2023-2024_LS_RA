@@ -53,7 +53,7 @@ static constexpr std::chrono::milliseconds kDisplayTask2Delay                = 1
 static constexpr std::chrono::milliseconds kDisplayTask2ComputationTime      = 100ms;
 static constexpr std::chrono::milliseconds kCPUTaskPeriod                    = 1600ms;
 static constexpr std::chrono::milliseconds kCPUTaskDelay                     = 1200ms;
-static constexpr std::chrono::milliseconds kCPUTaskComputationTime           = 400ms;
+static constexpr std::chrono::milliseconds kCPUTaskComputationTime           = 100ms;
 
 BikeSystem::BikeSystem()
     : _gearDevice(),
@@ -139,10 +139,10 @@ void BikeSystem::startWithEventQueue() {
     display2Event.post();
 
     #if !defined(MBED_TEST_MODE)
-        Event<void()> displayCPU(&eventQueue, callback(this, &BikeSystem::displayCPU));
-        display2Event.delay(kCPUTaskDelay);
-        display2Event.period(kCPUTaskPeriod);
-        display2Event.post();
+        Event<void()> cpuEvent(&eventQueue, callback(this, &BikeSystem::cpuTask));
+        cpuEvent.delay(kCPUTaskDelay);
+        cpuEvent.period(kCPUTaskPeriod);
+        cpuEvent.post();
     #endif
 
     eventQueue.dispatch_forever();
@@ -254,7 +254,7 @@ void BikeSystem::displayTask2() {
         _timer, advembsof::TaskLogger::kDisplayTask2Index, taskStartTime);
 }
 
-void BikeSystem::displayCPU() {
+void BikeSystem::cpuTask() {
     _cpuLogger.printStats();
 }
 }  // namespace static_scheduling
