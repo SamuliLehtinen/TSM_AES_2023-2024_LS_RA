@@ -56,8 +56,6 @@ void GearDevice::onDown() {
 }
 
 uint8_t GearDevice::getCurrentGearSize() const {
-    // simulate task computation by waiting for the required task run time
-    // wait_us(kTaskRunTime.count());
     return bike_computer::kMaxGearSize - core_util_atomic_load_u8(&_currentGear);
 }
 
