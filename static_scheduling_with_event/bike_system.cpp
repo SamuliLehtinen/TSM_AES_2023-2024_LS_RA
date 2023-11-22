@@ -97,6 +97,7 @@ void BikeSystem::start() {
         
         #if !defined(MBED_TEST_MODE)
             _cpuLogger.printStats();
+            _memoryLogger.getAndPrintStatistics();
         #endif
     }
 }

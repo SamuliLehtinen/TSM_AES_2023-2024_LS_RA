@@ -28,6 +28,7 @@
 #include "display_device.hpp"
 #include "task_logger.hpp"
 #include "cpu_logger.hpp"
+#include "memory_logger.hpp"
 
 // from common
 #include "sensor_device.hpp"
@@ -108,6 +109,7 @@ class BikeSystem {
 
     advembsof::CPULogger _cpuLogger;
     
+    advembsof::MemoryLogger _memoryLogger;
 };
 
 }  // namespace static_scheduling
