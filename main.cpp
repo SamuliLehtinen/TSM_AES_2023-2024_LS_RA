@@ -5,7 +5,7 @@
 
 #include "mbed.h"
 #include "mbed_trace.h"
-#include "static_scheduling_with_event/bike_system.hpp"
+#include "multi_tasking/bike_system.hpp"
 
 #if defined(MBED_CONF_MBED_TRACE_ENABLE)
 #define TRACE_GROUP "MAIN"
@@ -17,7 +17,7 @@ int main() {
 #if defined(MBED_CONF_MBED_TRACE_ENABLE)
   mbed_trace_init();
 #endif
-  static_scheduling_with_event::BikeSystem bikeSystem;
-  bikeSystem.startWithEventQueue();
+  multi_tasking::BikeSystem bikeSystem;
+  bikeSystem.start();
 }
 #endif

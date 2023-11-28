@@ -70,8 +70,6 @@ class BikeSystem {
     void speedDistanceTask(); 
     void temperatureTask();
     void resetTask();
-    void displayTask1();
-    void displayTask2();
     void displayTask();
     void cpuTask();
 
@@ -105,8 +103,9 @@ class BikeSystem {
     // used for logging task info
     advembsof::TaskLogger _taskLogger;
 
+    EventQueue _eventQueue;
 
-    advembsof::CPULogger _cpuLogger;
+    Thread _eventThread;
     
 };
 
