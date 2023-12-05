@@ -27,7 +27,9 @@ namespace multi_tasking {
 // definition of task execution time
 static constexpr std::chrono::microseconds kTaskRunTime = 200000us;
 
-PedalDevice::PedalDevice() {
+PedalDevice::PedalDevice(EventQueue& eventQueue,
+                         mbed::Callback<void(const std::chrono::milliseconds&)> cb)
+    : _eventQueue(eventQueue), _cb(cb) {
     disco::Joystick::getInstance().setLeftCallback(callback(this, &PedalDevice::onLeft));
     disco::Joystick::getInstance().setRightCallback(callback(this, &PedalDevice::onRight));
 }
@@ -53,8 +55,24 @@ void PedalDevice::decreaseRotationSpeed() {
     }
 }
 
-void PedalDevice::onLeft() { decreaseRotationSpeed(); }
+void PedalDevice::onLeft() { //decreaseRotationSpeed(); 
+    if (_currentStep < kNbrOfSteps) {
+            _currentStep++;
+            postEvent();
+        }
+}
 
-void PedalDevice::onRight() { increaseRotationSpeed(); }
+void PedalDevice::onRight() { //increaseRotationSpeed(); 
+    if (_currentStep > 0) {
+        _currentStep--;
+        postEvent();
+    }
+}
+
+void PedalDevice::postEvent() {
+    Event<void(const std::chrono::milliseconds&)> newRotationTimeEvent(&_eventQueue, _cb);
+    _currentRotationTime = bike_computer::kMinPedalRotationTime + _currentStep * bike_computer::kDeltaPedalRotationTime;
+    newRotationTimeEvent.post(_currentRotationTime);
+}
 
 }  // namespace multi_tasking

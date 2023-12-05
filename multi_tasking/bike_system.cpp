@@ -44,7 +44,7 @@ static constexpr std::chrono::milliseconds kMajorCycleDuration             = 160
 
 BikeSystem::BikeSystem()
     : _gearDevice(_eventQueue, callback(this, &BikeSystem::onGearChanged)),
-      _pedalDevice(),
+      _pedalDevice(_eventQueue, callback(this, &BikeSystem::onRotationSpeedChanged)),
       _resetDevice(callback(this, &BikeSystem::onReset)),
       _speedometer(_timer),
       _eventThread(osPriorityNormal, OS_STACK_SIZE, nullptr, "isrThread") {}
@@ -157,7 +157,7 @@ void BikeSystem::resetTask() {
 
 void BikeSystem::displayTask() {
     auto taskStartTime = _timer.elapsed_time();
-
+    auto _currentSpeed    = _speedometer.getCurrentSpeed();
     _displayDevice.displayGear(_currentGear);
     _displayDevice.displaySpeed(_currentSpeed);
     _displayDevice.displayDistance(_traveledDistance);
@@ -173,6 +173,11 @@ void BikeSystem::onGearChanged(uint8_t currentGear, uint8_t currentGearSize) {
     tr_info("current Gear changed");
 
     _speedometer.setGearSize(currentGearSize);
+}
+
+void BikeSystem::onRotationSpeedChanged(const std::chrono::milliseconds& pedalRotationTime){
+     _speedometer.setCurrentRotationTime(pedalRotationTime);
+     tr_info("pedal rotation set");
 }
 
 }  // namespace multi_tasking

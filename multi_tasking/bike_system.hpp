@@ -73,7 +73,7 @@ class BikeSystem {
     void displayTask();
     void cpuTask();
     void onGearChanged(uint8_t currentGear, uint8_t currentGearSize);
-
+    void onRotationSpeedChanged(const std::chrono::milliseconds& pedalRotationTime);
     // stop flag, used for stopping the super-loop (set in stop())
     bool _stopFlag = false;
      // used for computing the reset response time

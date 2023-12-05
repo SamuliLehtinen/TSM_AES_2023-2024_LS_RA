@@ -31,8 +31,8 @@ namespace multi_tasking {
 
 class PedalDevice {
    public:
-    PedalDevice();  // NOLINT(runtime/references)
-
+    PedalDevice(EventQueue& eventQueue,  // NOLINT(runtime/references)
+                mbed::Callback<void(const std::chrono::milliseconds&)> cb);
     // make the class non copyable
     PedalDevice(PedalDevice&)            = delete;
     PedalDevice& operator=(PedalDevice&) = delete;
@@ -56,6 +56,13 @@ class PedalDevice {
         (bike_computer::kInitialPedalRotationTime - bike_computer::kMinPedalRotationTime)
             .count() /
         bike_computer::kDeltaPedalRotationTime.count());
+    
+    EventQueue& _eventQueue;
+    mbed::Callback<void(const std::chrono::milliseconds&)> _cb;
+    void postEvent();
+    std::chrono::milliseconds _currentRotationTime;
+
 };
+    
 
 }  // namespace multi_tasking
