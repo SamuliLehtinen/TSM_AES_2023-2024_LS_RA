@@ -72,6 +72,7 @@ class BikeSystem {
     void resetTask();
     void displayTask();
     void cpuTask();
+    void onGearChanged(uint8_t currentGear, uint8_t currentGearSize);
 
     // stop flag, used for stopping the super-loop (set in stop())
     bool _stopFlag = false;
@@ -104,9 +105,12 @@ class BikeSystem {
     advembsof::TaskLogger _taskLogger;
 
     EventQueue _eventQueue;
+    EventQueue _eventQueueForISRs;
 
     Thread _eventThread;
     
+
+
 };
 
 }  // namespace multi_tasking

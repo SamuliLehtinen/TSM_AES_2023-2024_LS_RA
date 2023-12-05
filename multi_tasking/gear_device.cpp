@@ -36,27 +36,42 @@
 
 namespace multi_tasking {
 
-GearDevice::GearDevice() {
+GearDevice::GearDevice(EventQueue& eventQueue, mbed::Callback<void(uint8_t, uint8_t)> cb)
+    : _eventQueue(eventQueue), _cb(cb) {
     disco::Joystick::getInstance().setUpCallback(callback(this, &GearDevice::onUp));
     disco::Joystick::getInstance().setDownCallback(callback(this, &GearDevice::onDown));
+    postEvent();
 }
 
 uint8_t GearDevice::getCurrentGear() { return core_util_atomic_load_u8(&_currentGear); }
 
 void GearDevice::onUp() {
     if (_currentGear < bike_computer::kMaxGear) {
-        core_util_atomic_incr_u8(&_currentGear, 1);
+        _currentGear++;
+        postEvent();
     }
+    //if (_currentGear < bike_computer::kMaxGear) {
+    //    core_util_atomic_incr_u8(&_currentGear, 1);
+    //}
 }
 
 void GearDevice::onDown() {
-    if (_currentGear < bike_computer::kMaxGear) {
-        core_util_atomic_decr_u8(&_currentGear, 1);
+    if (_currentGear > bike_computer::kMinGear) {
+        _currentGear--;
+        postEvent();
     }
+    //if (_currentGear < bike_computer::kMaxGear) {
+    //    core_util_atomic_decr_u8(&_currentGear, 1);
+    //}
 }
 
 uint8_t GearDevice::getCurrentGearSize() const {
     return bike_computer::kMaxGearSize - core_util_atomic_load_u8(&_currentGear);
+}
+
+void GearDevice::postEvent() {
+    Event<void(uint8_t, uint8_t)> newGearEvent(&_eventQueue, _cb);
+    newGearEvent.post(_currentGear, bike_computer::kMaxGearSize - _currentGear);
 }
 
 }  // namespace multi_tasking

@@ -25,6 +25,7 @@
 #include "bike_system.hpp"
 
 #include <chrono>
+#include <cstdio>
 
 #include "mbed_trace.h"
 #if MBED_CONF_MBED_TRACE_ENABLE
@@ -42,7 +43,7 @@ static constexpr std::chrono::milliseconds kTemperatureTaskComputationTime = 100
 static constexpr std::chrono::milliseconds kMajorCycleDuration             = 1600ms;
 
 BikeSystem::BikeSystem()
-    : _gearDevice(),
+    : _gearDevice(_eventQueue, callback(this, &BikeSystem::onGearChanged)),
       _pedalDevice(),
       _resetDevice(callback(this, &BikeSystem::onReset)),
       _speedometer(_timer),
@@ -63,7 +64,7 @@ void BikeSystem::start() {
     temperatureEvent.period(kTemperatureTaskPeriod);
     temperatureEvent.post();
 
-    _eventThread.start(callback(&_eventQueue, &EventQueue::dispatch_forever));
+    _eventThread.start(callback(&_eventQueueForISRs, &EventQueue::dispatch_forever));
 
     _eventQueue.dispatch_forever();
 
@@ -72,10 +73,14 @@ void BikeSystem::start() {
 
 void BikeSystem::onReset() {
     _resetTime = _timer.elapsed_time();
+    _eventQueueForISRs.call(callback(this, &BikeSystem::resetTask));
     core_util_atomic_store_bool(&_resetFlag, true);
 }
 
-void BikeSystem::stop() { core_util_atomic_store_bool(&_stopFlag, true); }
+void BikeSystem::stop() { 
+    _eventThread.terminate();
+    core_util_atomic_store_bool(&_stopFlag, true); 
+}
 
 #if defined(MBED_TEST_MODE)
 const advembsof::TaskLogger& BikeSystem::getTaskLogger() { return _taskLogger; }
@@ -160,6 +165,14 @@ void BikeSystem::displayTask() {
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kDisplayTask1Index, taskStartTime);
+}
+
+void BikeSystem::onGearChanged(uint8_t currentGear, uint8_t currentGearSize) {
+    _currentGear = currentGear;
+    printf("current gear :%d", currentGear);
+    tr_info("current Gear changed");
+
+    _speedometer.setGearSize(currentGearSize);
 }
 
 }  // namespace multi_tasking

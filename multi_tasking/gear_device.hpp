@@ -31,8 +31,8 @@ namespace multi_tasking {
 
 class GearDevice {
    public:
-    GearDevice();  // NOLINT(runtime/references)
-
+    GearDevice(EventQueue& eventQueue,  // NOLINT(runtime/references)
+               mbed::Callback<void(uint8_t, uint8_t)> cb);
     // make the class non copyable
     GearDevice(GearDevice&)            = delete;
     GearDevice& operator=(GearDevice&) = delete;
@@ -43,10 +43,17 @@ class GearDevice {
 
     void onUp();
     void onDown();
-    
+
+
    private:
     // data members
     volatile uint8_t _currentGear = bike_computer::kMinGear;
+
+    EventQueue& _eventQueue;
+    mbed::Callback<void(uint8_t, uint8_t)> _cb;
+
+    void postEvent();
+
 };
 
 }  // namespace multi_tasking
