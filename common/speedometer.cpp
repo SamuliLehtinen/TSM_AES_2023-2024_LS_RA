@@ -94,6 +94,8 @@ std::chrono::milliseconds Speedometer::getCurrentPedalRotationTime() const {
   return _pedalRotationTime;
 }
 
+void Speedometer::setOnResetCallback(mbed::Callback<void()> cb) { _cb = cb; }
+
 #endif // defined(MBED_TEST_MODE)
 
 void Speedometer::computeSpeed() {
@@ -113,7 +115,6 @@ void Speedometer::computeSpeed() {
       (distancePerPedalRotation * 3600.0f) /
       std::chrono::duration_cast<std::chrono::milliseconds>(_pedalRotationTime)
           .count();
-
   tr_debug("New speed is %f", _currentSpeed);
 }
 

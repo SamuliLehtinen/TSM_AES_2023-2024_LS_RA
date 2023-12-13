@@ -43,12 +43,15 @@ static constexpr std::chrono::milliseconds kTemperatureTaskComputationTime = 100
 static constexpr std::chrono::milliseconds kMajorCycleDuration             = 1600ms;
 
 BikeSystem::BikeSystem()
-    : _gearDevice(_eventQueue, callback(this, &BikeSystem::onGearChanged)),
-      _pedalDevice(_eventQueue, callback(this, &BikeSystem::onRotationSpeedChanged)),
-      _resetDevice(callback(this, &BikeSystem::onReset)),
+    : _eventThread(osPriorityNormal, OS_STACK_SIZE, nullptr, "isrThread"),
       _speedometer(_timer),
-      _eventThread(osPriorityNormal, OS_STACK_SIZE, nullptr, "isrThread") {}
-
+      _gearDevice(_eventQueue, callback(this, &BikeSystem::onGearChanged)),
+      _pedalDevice(_eventQueue, callback(this, &BikeSystem::onRotationSpeedChanged)),
+      _resetDevice(callback(this, &BikeSystem::onReset))
+      {
+        _speedometer.setGearSize(bike_computer::kMaxGearSize -1);
+      }
+      
 void BikeSystem::start() {
     tr_info("Starting Super-Loop without event handling");
 
@@ -76,6 +79,7 @@ void BikeSystem::onReset() {
     _eventQueueForISRs.call(callback(this, &BikeSystem::resetTask));
     core_util_atomic_store_bool(&_resetFlag, true);
 }
+
 
 void BikeSystem::stop() { 
     _eventThread.terminate();
@@ -141,6 +145,7 @@ void BikeSystem::temperatureTask() {
 }
 
 void BikeSystem::resetTask() {
+#if !defined(MBED_TEST_MODE)
     auto taskStartTime = _timer.elapsed_time();
 
     if (core_util_atomic_load_bool(&_resetFlag)) {
@@ -153,11 +158,15 @@ void BikeSystem::resetTask() {
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kResetTaskIndex, taskStartTime);
+#endif  // !defined(MBED_TEST_MODE)
+    _speedometer.reset();
 }
+
 
 void BikeSystem::displayTask() {
     auto taskStartTime = _timer.elapsed_time();
-    auto _currentSpeed    = _speedometer.getCurrentSpeed();
+    auto _currentSpeed = _speedometer.getCurrentSpeed();
+
     _displayDevice.displayGear(_currentGear);
     _displayDevice.displaySpeed(_currentSpeed);
     _displayDevice.displayDistance(_traveledDistance);
@@ -169,15 +178,12 @@ void BikeSystem::displayTask() {
 
 void BikeSystem::onGearChanged(uint8_t currentGear, uint8_t currentGearSize) {
     _currentGear = currentGear;
-    printf("current gear :%d", currentGear);
-    tr_info("current Gear changed");
-
     _speedometer.setGearSize(currentGearSize);
 }
 
 void BikeSystem::onRotationSpeedChanged(const std::chrono::milliseconds& pedalRotationTime){
      _speedometer.setCurrentRotationTime(pedalRotationTime);
-     tr_info("pedal rotation set");
 }
+
 
 }  // namespace multi_tasking

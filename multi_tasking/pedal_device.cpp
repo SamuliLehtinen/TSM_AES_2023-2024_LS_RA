@@ -32,6 +32,7 @@ PedalDevice::PedalDevice(EventQueue& eventQueue,
     : _eventQueue(eventQueue), _cb(cb) {
     disco::Joystick::getInstance().setLeftCallback(callback(this, &PedalDevice::onLeft));
     disco::Joystick::getInstance().setRightCallback(callback(this, &PedalDevice::onRight));
+    postEvent();
 }
 
 
@@ -55,14 +56,16 @@ void PedalDevice::decreaseRotationSpeed() {
     }
 }
 
-void PedalDevice::onLeft() { //decreaseRotationSpeed(); 
+void PedalDevice::onLeft() { 
+    //decreaseRotationSpeed(); 
     if (_currentStep < kNbrOfSteps) {
             _currentStep++;
             postEvent();
         }
 }
 
-void PedalDevice::onRight() { //increaseRotationSpeed(); 
+void PedalDevice::onRight() { 
+    //increaseRotationSpeed(); 
     if (_currentStep > 0) {
         _currentStep--;
         postEvent();
