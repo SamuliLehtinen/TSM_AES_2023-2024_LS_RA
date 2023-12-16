@@ -47,7 +47,7 @@ BikeSystem::BikeSystem()
       _speedometer(_timer),
       _gearDevice(_eventQueue, callback(this, &BikeSystem::onGearChanged)),
       _pedalDevice(_eventQueue, callback(this, &BikeSystem::onRotationSpeedChanged)),
-      _resetDevice(callback(this, &BikeSystem::onReset))
+      _resetDevice(callback(this, &BikeSystem::onReset)),
       {
         _speedometer.setGearSize(bike_computer::kMaxGearSize -1);
       }
@@ -88,6 +88,9 @@ void BikeSystem::stop() {
 
 #if defined(MBED_TEST_MODE)
 const advembsof::TaskLogger& BikeSystem::getTaskLogger() { return _taskLogger; }
+bike_computer::Speedometer& BikeSystem::getSpeedometer() { return _speedometer; }
+GearDevice& BikeSystem::getGearDevice() { return _gearDevice; }
+uint8_t BikeSystem::getCurrentGear() const { return _currentGear; }
 #endif  // defined(MBED_TEST_MODE)
 
 
