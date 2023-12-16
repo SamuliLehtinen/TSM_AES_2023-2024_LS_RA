@@ -47,7 +47,7 @@ BikeSystem::BikeSystem()
       _speedometer(_timer),
       _gearDevice(_eventQueue, callback(this, &BikeSystem::onGearChanged)),
       _pedalDevice(_eventQueue, callback(this, &BikeSystem::onRotationSpeedChanged)),
-      _resetDevice(callback(this, &BikeSystem::onReset)),
+      _resetDevice(callback(this, &BikeSystem::onReset))
       {
         _speedometer.setGearSize(bike_computer::kMaxGearSize -1);
       }
@@ -68,6 +68,8 @@ void BikeSystem::start() {
     temperatureEvent.post();
 
     _eventThread.start(callback(&_eventQueueForISRs, &EventQueue::dispatch_forever));
+
+    //_memoryLogger.getAndPrintStatistics();
 
     _eventQueue.dispatch_forever();
 
@@ -169,6 +171,7 @@ void BikeSystem::resetTask() {
 void BikeSystem::displayTask() {
     auto taskStartTime = _timer.elapsed_time();
     auto _currentSpeed = _speedometer.getCurrentSpeed();
+    auto _traveledDistance = _speedometer.getDistance();
 
     _displayDevice.displayGear(_currentGear);
     _displayDevice.displaySpeed(_currentSpeed);
