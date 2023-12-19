@@ -145,7 +145,11 @@ static void test_bike_system_event_queue() {
 }
 
 // List of test cases in this file
-static Case cases[] = {Case("test bike system", test_bike_system)};
+static Case cases[] = {
+    Case("test bike system", test_bike_system),
+    Case("test bike system with event", test_bike_system_with_event),
+    Case("test bike system event queue", test_bike_system_event_queue),
+};
 
 static Specification specification(greentea_setup, cases);
 
