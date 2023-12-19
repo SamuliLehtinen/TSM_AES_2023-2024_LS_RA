@@ -33,26 +33,25 @@
 
 namespace static_scheduling {
 
-static constexpr std::chrono::milliseconds kGearTaskPeriod = 800ms;
-static constexpr std::chrono::milliseconds kGearTaskDelay = 0ms;
-static constexpr std::chrono::milliseconds kGearTaskComputationTime = 100ms;
-static constexpr std::chrono::milliseconds kSpeedDistanceTaskPeriod = 400ms;
-static constexpr std::chrono::milliseconds kSpeedDistanceTaskDelay = 100ms;
-static constexpr std::chrono::milliseconds kSpeedDistanceTaskComputationTime =
-    200ms;
-static constexpr std::chrono::milliseconds kDisplayTask1Period = 1600ms;
-static constexpr std::chrono::milliseconds kDisplayTask1Delay = 300ms;
-static constexpr std::chrono::milliseconds kDisplayTask1ComputationTime = 200ms;
-static constexpr std::chrono::milliseconds kResetTaskPeriod = 800ms;
-static constexpr std::chrono::milliseconds kResetTaskDelay = 700ms;
-static constexpr std::chrono::milliseconds kResetTaskComputationTime = 100ms;
-static constexpr std::chrono::milliseconds kTemperatureTaskPeriod = 1600ms;
-static constexpr std::chrono::milliseconds kTemperatureTaskDelay = 1100ms;
-static constexpr std::chrono::milliseconds kTemperatureTaskComputationTime =
-    100ms;
-static constexpr std::chrono::milliseconds kDisplayTask2Period = 1600ms;
-static constexpr std::chrono::milliseconds kDisplayTask2Delay = 1200ms;
-static constexpr std::chrono::milliseconds kDisplayTask2ComputationTime = 100ms;
+static constexpr std::chrono::milliseconds kGearTaskPeriod                   = 800ms;
+static constexpr std::chrono::milliseconds kGearTaskDelay                    = 0ms;
+static constexpr std::chrono::milliseconds kGearTaskComputationTime          = 100ms;
+static constexpr std::chrono::milliseconds kSpeedDistanceTaskPeriod          = 400ms;
+static constexpr std::chrono::milliseconds kSpeedDistanceTaskDelay           = 100ms;
+static constexpr std::chrono::milliseconds kSpeedDistanceTaskComputationTime = 200ms;
+static constexpr std::chrono::milliseconds kDisplayTask1Period               = 1600ms;
+static constexpr std::chrono::milliseconds kDisplayTask1Delay                = 300ms;
+static constexpr std::chrono::milliseconds kDisplayTask1ComputationTime      = 200ms;
+static constexpr std::chrono::milliseconds kResetTaskPeriod                  = 800ms;
+static constexpr std::chrono::milliseconds kResetTaskDelay                   = 700ms;
+static constexpr std::chrono::milliseconds kResetTaskComputationTime         = 100ms;
+static constexpr std::chrono::milliseconds kTemperatureTaskPeriod            = 1600ms;
+static constexpr std::chrono::milliseconds kTemperatureTaskDelay             = 1100ms;
+static constexpr std::chrono::milliseconds kTemperatureTaskComputationTime   = 100ms;
+static constexpr std::chrono::milliseconds kDisplayTask2Period               = 1600ms;
+static constexpr std::chrono::milliseconds kDisplayTask2Delay                = 1200ms;
+static constexpr std::chrono::milliseconds kDisplayTask2ComputationTime      = 100ms;
+static constexpr std::chrono::milliseconds kMajorCycleDuration               = 1600ms;
 static constexpr std::chrono::milliseconds kCPUTaskPeriod = 1600ms;
 static constexpr std::chrono::milliseconds kCPUTaskDelay = 1200ms;
 static constexpr std::chrono::milliseconds kCPUTaskComputationTime = 400ms;
@@ -79,6 +78,7 @@ void BikeSystem::start() {
     temperatureTask();
     displayTask2();
     speedDistanceTask();
+    resetTask();
 
     // register the time at the end of the cyclic schedule period and print the
     // elapsed time for the period
