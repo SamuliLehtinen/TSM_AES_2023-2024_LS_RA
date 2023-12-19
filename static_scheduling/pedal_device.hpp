@@ -30,25 +30,25 @@
 namespace static_scheduling {
 
 class PedalDevice {
-   public:
-    explicit PedalDevice(Timer& timer);  // NOLINT(runtime/references)
+public:
+  explicit PedalDevice(Timer &timer); // NOLINT(runtime/references)
 
-    // make the class non copyable
-    PedalDevice(PedalDevice&)            = delete;
-    PedalDevice& operator=(PedalDevice&) = delete;
+  // make the class non copyable
+  PedalDevice(PedalDevice &) = delete;
+  PedalDevice &operator=(PedalDevice &) = delete;
 
-    // method called for updating the bike system
-    std::chrono::milliseconds getCurrentRotationTime();
+  // method called for updating the bike system
+  std::chrono::milliseconds getCurrentRotationTime();
 
-   private:
-    // private methods
-    void increaseRotationSpeed();
-    void decreaseRotationSpeed();
+private:
+  // private methods
+  void increaseRotationSpeed();
+  void decreaseRotationSpeed();
 
-    // data members
-    std::chrono::milliseconds _pedalRotationTime =
-        bike_computer::kInitialPedalRotationTime;
-    Timer& _timer;
+  // data members
+  std::chrono::milliseconds _pedalRotationTime =
+      bike_computer::kInitialPedalRotationTime;
+  Timer &_timer;
 };
 
-}  // namespace static_scheduling
+} // namespace static_scheduling

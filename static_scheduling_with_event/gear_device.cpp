@@ -32,31 +32,35 @@
 
 #if MBED_CONF_MBED_TRACE_ENABLE
 #define TRACE_GROUP "GearDevice"
-#endif  // MBED_CONF_MBED_TRACE_ENABLE
+#endif // MBED_CONF_MBED_TRACE_ENABLE
 
 namespace static_scheduling_with_event {
 
 GearDevice::GearDevice() {
-    disco::Joystick::getInstance().setUpCallback(callback(this, &GearDevice::onUp));
-    disco::Joystick::getInstance().setDownCallback(callback(this, &GearDevice::onDown));
+  disco::Joystick::getInstance().setUpCallback(
+      callback(this, &GearDevice::onUp));
+  disco::Joystick::getInstance().setDownCallback(
+      callback(this, &GearDevice::onDown));
 }
 
-uint8_t GearDevice::getCurrentGear() { return core_util_atomic_load_u8(&_currentGear); }
+uint8_t GearDevice::getCurrentGear() {
+  return core_util_atomic_load_u8(&_currentGear);
+}
 
 void GearDevice::onUp() {
-    if (_currentGear < bike_computer::kMaxGear) {
-        core_util_atomic_incr_u8(&_currentGear, 1);
-    }
+  if (_currentGear < bike_computer::kMaxGear) {
+    core_util_atomic_incr_u8(&_currentGear, 1);
+  }
 }
 
 void GearDevice::onDown() {
-    if (_currentGear < bike_computer::kMaxGear) {
-        core_util_atomic_decr_u8(&_currentGear, 1);
-    }
+  if (_currentGear < bike_computer::kMaxGear) {
+    core_util_atomic_decr_u8(&_currentGear, 1);
+  }
 }
 
 uint8_t GearDevice::getCurrentGearSize() const {
-    return bike_computer::kMaxGearSize - core_util_atomic_load_u8(&_currentGear);
+  return bike_computer::kMaxGearSize - core_util_atomic_load_u8(&_currentGear);
 }
 
-}  // namespace static_scheduling
+} // namespace static_scheduling_with_event

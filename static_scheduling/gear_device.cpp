@@ -32,52 +32,52 @@
 
 #if MBED_CONF_MBED_TRACE_ENABLE
 #define TRACE_GROUP "GearDevice"
-#endif  // MBED_CONF_MBED_TRACE_ENABLE
+#endif // MBED_CONF_MBED_TRACE_ENABLE
 
 namespace static_scheduling {
 
 // definition of task execution time
 static constexpr std::chrono::microseconds kTaskRunTime = 100000us;
 
-GearDevice::GearDevice(Timer& timer) : _timer(timer) {}
+GearDevice::GearDevice(Timer &timer) : _timer(timer) {}
 
 uint8_t GearDevice::getCurrentGear() {
-    std::chrono::microseconds initialTime = _timer.elapsed_time();
-    std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
-    // we bound the change to one increment/decrement per call
-    bool hasChanged = false;
-    while (elapsedTime < kTaskRunTime) {
-        if (!hasChanged) {
-            disco::Joystick::State joystickState =
-                disco::Joystick::getInstance().getState();
-            switch (joystickState) {
-                case disco::Joystick::State::UpPressed:
-                    if (_currentGear < bike_computer::kMaxGear) {
-                        _currentGear++;
-                    }
-                    hasChanged = true;
-                    break;
-
-                case disco::Joystick::State::DownPressed:
-                    if (_currentGear > bike_computer::kMinGear) {
-                        _currentGear--;
-                    }
-                    hasChanged = true;
-                    break;
-
-                default:
-                    break;
-            }
+  std::chrono::microseconds initialTime = _timer.elapsed_time();
+  std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
+  // we bound the change to one increment/decrement per call
+  bool hasChanged = false;
+  while (elapsedTime < kTaskRunTime) {
+    if (!hasChanged) {
+      disco::Joystick::State joystickState =
+          disco::Joystick::getInstance().getState();
+      switch (joystickState) {
+      case disco::Joystick::State::UpPressed:
+        if (_currentGear < bike_computer::kMaxGear) {
+          _currentGear++;
         }
-        elapsedTime = _timer.elapsed_time() - initialTime;
+        hasChanged = true;
+        break;
+
+      case disco::Joystick::State::DownPressed:
+        if (_currentGear > bike_computer::kMinGear) {
+          _currentGear--;
+        }
+        hasChanged = true;
+        break;
+
+      default:
+        break;
+      }
     }
-    return _currentGear;
+    elapsedTime = _timer.elapsed_time() - initialTime;
+  }
+  return _currentGear;
 }
 
 uint8_t GearDevice::getCurrentGearSize() const {
-    // simulate task computation by waiting for the required task run time
-    // wait_us(kTaskRunTime.count());
-    return bike_computer::kMaxGearSize - _currentGear;
+  // simulate task computation by waiting for the required task run time
+  // wait_us(kTaskRunTime.count());
+  return bike_computer::kMaxGearSize - _currentGear;
 }
 
-}  // namespace static_scheduling
+} // namespace static_scheduling

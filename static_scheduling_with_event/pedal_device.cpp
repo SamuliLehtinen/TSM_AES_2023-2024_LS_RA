@@ -20,7 +20,7 @@
 
 #if MBED_CONF_MBED_TRACE_ENABLE
 #define TRACE_GROUP "PedalDevice"
-#endif  // MBED_CONF_MBED_TRACE_ENABLE
+#endif // MBED_CONF_MBED_TRACE_ENABLE
 
 namespace static_scheduling_with_event {
 
@@ -28,33 +28,34 @@ namespace static_scheduling_with_event {
 static constexpr std::chrono::microseconds kTaskRunTime = 200000us;
 
 PedalDevice::PedalDevice() {
-    disco::Joystick::getInstance().setLeftCallback(callback(this, &PedalDevice::onLeft));
-    disco::Joystick::getInstance().setRightCallback(callback(this, &PedalDevice::onRight));
+  disco::Joystick::getInstance().setLeftCallback(
+      callback(this, &PedalDevice::onLeft));
+  disco::Joystick::getInstance().setRightCallback(
+      callback(this, &PedalDevice::onRight));
 }
 
-
 std::chrono::milliseconds PedalDevice::getCurrentRotationTime() {
-    uint32_t currentStep = core_util_atomic_load_u32(&_currentStep);
-    return bike_computer::kMinPedalRotationTime +
-           currentStep * bike_computer::kDeltaPedalRotationTime;
+  uint32_t currentStep = core_util_atomic_load_u32(&_currentStep);
+  return bike_computer::kMinPedalRotationTime +
+         currentStep * bike_computer::kDeltaPedalRotationTime;
 }
 
 void PedalDevice::increaseRotationSpeed() {
-    uint32_t currentStep = core_util_atomic_load_u32(&_currentStep);
-    if (currentStep > 0) {
-        core_util_atomic_decr_u32(&_currentStep, 1);
-    }
+  uint32_t currentStep = core_util_atomic_load_u32(&_currentStep);
+  if (currentStep > 0) {
+    core_util_atomic_decr_u32(&_currentStep, 1);
+  }
 }
 
 void PedalDevice::decreaseRotationSpeed() {
-    uint32_t currentStep = core_util_atomic_load_u32(&_currentStep);
-    if (currentStep < kNbrOfSteps) {
-        core_util_atomic_incr_u32(&_currentStep, 1);
-    }
+  uint32_t currentStep = core_util_atomic_load_u32(&_currentStep);
+  if (currentStep < kNbrOfSteps) {
+    core_util_atomic_incr_u32(&_currentStep, 1);
+  }
 }
 
 void PedalDevice::onLeft() { decreaseRotationSpeed(); }
 
 void PedalDevice::onRight() { increaseRotationSpeed(); }
 
-}  // namespace static_scheduling
+} // namespace static_scheduling_with_event
