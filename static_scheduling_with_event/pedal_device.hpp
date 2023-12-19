@@ -30,32 +30,34 @@
 namespace static_scheduling_with_event {
 
 class PedalDevice {
-   public:
-    PedalDevice();  // NOLINT(runtime/references)
+public:
+  PedalDevice(); // NOLINT(runtime/references)
 
-    // make the class non copyable
-    PedalDevice(PedalDevice&)            = delete;
-    PedalDevice& operator=(PedalDevice&) = delete;
+  // make the class non copyable
+  PedalDevice(PedalDevice &) = delete;
+  PedalDevice &operator=(PedalDevice &) = delete;
 
-    // method called for updating the bike system
-    std::chrono::milliseconds getCurrentRotationTime();
+  // method called for updating the bike system
+  std::chrono::milliseconds getCurrentRotationTime();
 
-   private:
-    // private methods
-    void onLeft();
-    void onRight();
-    void increaseRotationSpeed();
-    void decreaseRotationSpeed();
+private:
+  // private methods
+  void onLeft();
+  void onRight();
+  void increaseRotationSpeed();
+  void decreaseRotationSpeed();
 
-    // data members
-    static constexpr uint32_t kNbrOfSteps = static_cast<uint32_t>(
-        (bike_computer::kMaxPedalRotationTime - bike_computer::kMinPedalRotationTime)
-            .count() /
-        bike_computer::kDeltaPedalRotationTime.count());
-    volatile uint32_t _currentStep = static_cast<uint32_t>(
-        (bike_computer::kInitialPedalRotationTime - bike_computer::kMinPedalRotationTime)
-            .count() /
-        bike_computer::kDeltaPedalRotationTime.count());
+  // data members
+  static constexpr uint32_t kNbrOfSteps =
+      static_cast<uint32_t>((bike_computer::kMaxPedalRotationTime -
+                             bike_computer::kMinPedalRotationTime)
+                                .count() /
+                            bike_computer::kDeltaPedalRotationTime.count());
+  volatile uint32_t _currentStep =
+      static_cast<uint32_t>((bike_computer::kInitialPedalRotationTime -
+                             bike_computer::kMinPedalRotationTime)
+                                .count() /
+                            bike_computer::kDeltaPedalRotationTime.count());
 };
 
-}  // namespace static_scheduling
+} // namespace static_scheduling_with_event

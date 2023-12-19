@@ -33,39 +33,38 @@
 #include "unity/unity.h"
 #include "utest/utest.h"
 
-
 using namespace utest::v1;
 
 static void test_bike_system_with_event() {
-    // create the BikeSystem instance
-    static_scheduling_with_event::BikeSystem bikeSystem;
+  // create the BikeSystem instance
+  static_scheduling_with_event::BikeSystem bikeSystem;
 
-    // run the bike system in a separate thread
-    Thread thread;
-    thread.start(callback(&bikeSystem, &static_scheduling_with_event::BikeSystem::start));
+  // run the bike system in a separate thread
+  Thread thread;
+  thread.start(
+      callback(&bikeSystem, &static_scheduling_with_event::BikeSystem::start));
 
-    // let the bike system run for 20 secs
-    ThisThread::sleep_for(20s);
+  // let the bike system run for 20 secs
+  ThisThread::sleep_for(20s);
 
-    // stop the bike system
-    bikeSystem.stop();
+  // stop the bike system
+  bikeSystem.stop();
 
-    // check whether scheduling was correct
-    // Order is kGearTaskIndex, kSpeedTaskIndex, kTemperatureTaskIndex,
-    //          kResetTaskIndex, kDisplayTask1Index, kDisplayTask2Index
-    // When we use event handling, we do not check the computation time
-    constexpr std::chrono::microseconds taskPeriods[] = {
-        800000us, 400000us, 1600000us, 800000us, 1600000us, 1600000us};
+  // check whether scheduling was correct
+  // Order is kGearTaskIndex, kSpeedTaskIndex, kTemperatureTaskIndex,
+  //          kResetTaskIndex, kDisplayTask1Index, kDisplayTask2Index
+  // When we use event handling, we do not check the computation time
+  constexpr std::chrono::microseconds taskPeriods[] = {
+      800000us, 400000us, 1600000us, 800000us, 1600000us, 1600000us};
 
-    // allow for 2 msecs offset (with EventQueue)
-    uint64_t deltaUs = 2000;
-    for (uint8_t taskIndex = 0; taskIndex < advembsof::TaskLogger::kNbrOfTasks;
-         taskIndex++) {
-        TEST_ASSERT_UINT64_WITHIN(
-            deltaUs,
-            taskPeriods[taskIndex].count(),
-            bikeSystem.getTaskLogger().getPeriod(taskIndex).count());        
-    }
+  // allow for 2 msecs offset (with EventQueue)
+  uint64_t deltaUs = 2000;
+  for (uint8_t taskIndex = 0; taskIndex < advembsof::TaskLogger::kNbrOfTasks;
+       taskIndex++) {
+    TEST_ASSERT_UINT64_WITHIN(
+        deltaUs, taskPeriods[taskIndex].count(),
+        bikeSystem.getTaskLogger().getPeriod(taskIndex).count());
+  }
 }
 
 // test_bike_system handler function

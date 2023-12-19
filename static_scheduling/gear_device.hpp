@@ -30,21 +30,21 @@
 namespace static_scheduling {
 
 class GearDevice {
-   public:
-    explicit GearDevice(Timer& timer);  // NOLINT(runtime/references)
+public:
+  explicit GearDevice(Timer &timer); // NOLINT(runtime/references)
 
-    // make the class non copyable
-    GearDevice(GearDevice&)            = delete;
-    GearDevice& operator=(GearDevice&) = delete;
+  // make the class non copyable
+  GearDevice(GearDevice &) = delete;
+  GearDevice &operator=(GearDevice &) = delete;
 
-    // method called for updating the bike system
-    uint8_t getCurrentGear();
-    uint8_t getCurrentGearSize() const;
+  // method called for updating the bike system
+  uint8_t getCurrentGear();
+  uint8_t getCurrentGearSize() const;
 
-   private:
-    // data members
-    uint8_t _currentGear = bike_computer::kMinGear;
-    Timer& _timer;
+private:
+  // data members
+  uint8_t _currentGear = bike_computer::kMinGear;
+  Timer &_timer;
 };
 
-}  // namespace static_scheduling
+} // namespace static_scheduling

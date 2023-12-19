@@ -20,56 +20,55 @@
 
 #if MBED_CONF_MBED_TRACE_ENABLE
 #define TRACE_GROUP "PedalDevice"
-#endif  // MBED_CONF_MBED_TRACE_ENABLE
+#endif // MBED_CONF_MBED_TRACE_ENABLE
 
 namespace static_scheduling {
 
 // definition of task execution time
 static constexpr std::chrono::microseconds kTaskRunTime = 200000us;
 
-PedalDevice::PedalDevice(Timer& timer) : _timer(timer) {}
+PedalDevice::PedalDevice(Timer &timer) : _timer(timer) {}
 
 std::chrono::milliseconds PedalDevice::getCurrentRotationTime() {
-    std::chrono::microseconds initialTime = _timer.elapsed_time();
-    std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
-    bool hasChanged = false;
-    while (elapsedTime < kTaskRunTime) {
-        if(!hasChanged){
-            disco::Joystick::State joystickState =
-                        disco::Joystick::getInstance().getState();
+  std::chrono::microseconds initialTime = _timer.elapsed_time();
+  std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
+  bool hasChanged = false;
+  while (elapsedTime < kTaskRunTime) {
+    if (!hasChanged) {
+      disco::Joystick::State joystickState =
+          disco::Joystick::getInstance().getState();
 
-            switch (joystickState) {
-                case disco::Joystick::State::LeftPressed:
-                    if (_pedalRotationTime < bike_computer::kMaxPedalRotationTime) {
-                        decreaseRotationSpeed();
-                        hasChanged = true;
-                    }
-                    break;
-
-                case disco::Joystick::State::RightPressed:
-                    if (_pedalRotationTime > bike_computer::kMinPedalRotationTime) {
-                        increaseRotationSpeed();
-                        hasChanged = true;
-                    }
-                    break;
-
-                default:
-                    break;
-            }
+      switch (joystickState) {
+      case disco::Joystick::State::LeftPressed:
+        if (_pedalRotationTime < bike_computer::kMaxPedalRotationTime) {
+          decreaseRotationSpeed();
+          hasChanged = true;
         }
-        elapsedTime = _timer.elapsed_time() - initialTime;
+        break;
+
+      case disco::Joystick::State::RightPressed:
+        if (_pedalRotationTime > bike_computer::kMinPedalRotationTime) {
+          increaseRotationSpeed();
+          hasChanged = true;
+        }
+        break;
+
+      default:
+        break;
+      }
     }
-    
-    return _pedalRotationTime;
+    elapsedTime = _timer.elapsed_time() - initialTime;
+  }
+
+  return _pedalRotationTime;
 }
 
-void PedalDevice::increaseRotationSpeed(){
-    _pedalRotationTime -= bike_computer::kDeltaPedalRotationTime;
+void PedalDevice::increaseRotationSpeed() {
+  _pedalRotationTime -= bike_computer::kDeltaPedalRotationTime;
 }
 
+void PedalDevice::decreaseRotationSpeed() {
+  _pedalRotationTime += bike_computer::kDeltaPedalRotationTime;
+}
 
-void PedalDevice::decreaseRotationSpeed(){
-    _pedalRotationTime += bike_computer::kDeltaPedalRotationTime;   
-}  
-
-}  // namespace static_scheduling
+} // namespace static_scheduling

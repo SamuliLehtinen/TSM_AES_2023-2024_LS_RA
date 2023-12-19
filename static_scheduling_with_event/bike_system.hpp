@@ -25,9 +25,9 @@
 #pragma once
 
 // from advembsof
+#include "cpu_logger.hpp"
 #include "display_device.hpp"
 #include "task_logger.hpp"
-#include "cpu_logger.hpp"
 
 // from common
 #include "sensor_device.hpp"
@@ -41,73 +41,71 @@
 namespace static_scheduling_with_event {
 
 class BikeSystem {
-   public:
-    // constructor
-    BikeSystem();
+public:
+  // constructor
+  BikeSystem();
 
-    // make the class non copyable
-    BikeSystem(BikeSystem&)            = delete;
-    BikeSystem& operator=(BikeSystem&) = delete;
+  // make the class non copyable
+  BikeSystem(BikeSystem &) = delete;
+  BikeSystem &operator=(BikeSystem &) = delete;
 
-    // method called in main() for starting the system
-    void start();
+  // method called in main() for starting the system
+  void start();
 
-    // method called in main() for starting the system with the event
-    void startWithEventQueue();
+  // method called in main() for starting the system with the event
+  void startWithEventQueue();
 
-    // method called for stopping the system
-    void stop();
+  // method called for stopping the system
+  void stop();
 
 #if defined(MBED_TEST_MODE)
-    const advembsof::TaskLogger& getTaskLogger();
-#endif  // defined(MBED_TEST_MODE)
+  const advembsof::TaskLogger &getTaskLogger();
+#endif // defined(MBED_TEST_MODE)
 
-   private:
-    // private methods
-    void init();
-    void onReset();
-    void gearTask();  
-    void speedDistanceTask(); 
-    void temperatureTask();
-    void resetTask();
-    void displayTask1();
-    void displayTask2();
-    void displayTask();
-    void cpuTask();
+private:
+  // private methods
+  void init();
+  void onReset();
+  void gearTask();
+  void speedDistanceTask();
+  void temperatureTask();
+  void resetTask();
+  void displayTask1();
+  void displayTask2();
+  void displayTask();
+  void cpuTask();
 
-    // stop flag, used for stopping the super-loop (set in stop())
-    bool _stopFlag = false;
-     // used for computing the reset response time
-    std::chrono::microseconds _resetTime = std::chrono::microseconds::zero();
-    // reset flag (set in onReset)
-    volatile bool _resetFlag = false;
-    // timer instance used for loggint task time and used by ResetDevice
-    Timer _timer;
-    // data member that represents the device for manipulating the gear
-    GearDevice _gearDevice;
-    uint8_t _currentGear = bike_computer::kMinGear;
-    uint8_t _currentGearSize = bike_computer::kMinGearSize;
-    // data member that represents the device for manipulating the pedal rotation
-    // speed/time
-    PedalDevice _pedalDevice;
-    float _currentSpeed = 0.0f;
-    float _traveledDistance = 0.0f;
-    // data member that represents the device used for resetting
-    ResetDevice _resetDevice;
-    // data member that represents the device display
-    advembsof::DisplayDevice _displayDevice;
-    // data member that represents the device for counting wheel rotations
-    bike_computer::Speedometer _speedometer;
-    // data member that represents the sensor device
-    bike_computer::SensorDevice _sensorDevice;
-    float _currentTemperature = 0.0f;
+  // stop flag, used for stopping the super-loop (set in stop())
+  bool _stopFlag = false;
+  // used for computing the reset response time
+  std::chrono::microseconds _resetTime = std::chrono::microseconds::zero();
+  // reset flag (set in onReset)
+  volatile bool _resetFlag = false;
+  // timer instance used for loggint task time and used by ResetDevice
+  Timer _timer;
+  // data member that represents the device for manipulating the gear
+  GearDevice _gearDevice;
+  uint8_t _currentGear = bike_computer::kMinGear;
+  uint8_t _currentGearSize = bike_computer::kMinGearSize;
+  // data member that represents the device for manipulating the pedal rotation
+  // speed/time
+  PedalDevice _pedalDevice;
+  float _currentSpeed = 0.0f;
+  float _traveledDistance = 0.0f;
+  // data member that represents the device used for resetting
+  ResetDevice _resetDevice;
+  // data member that represents the device display
+  advembsof::DisplayDevice _displayDevice;
+  // data member that represents the device for counting wheel rotations
+  bike_computer::Speedometer _speedometer;
+  // data member that represents the sensor device
+  bike_computer::SensorDevice _sensorDevice;
+  float _currentTemperature = 0.0f;
 
-    // used for logging task info
-    advembsof::TaskLogger _taskLogger;
+  // used for logging task info
+  advembsof::TaskLogger _taskLogger;
 
-
-    advembsof::CPULogger _cpuLogger;
-    
+  advembsof::CPULogger _cpuLogger;
 };
 
-}  // namespace static_scheduling
+} // namespace static_scheduling_with_event

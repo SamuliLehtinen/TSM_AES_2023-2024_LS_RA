@@ -29,18 +29,16 @@
 namespace static_scheduling_with_event {
 
 class ResetDevice {
-   public:
-    explicit ResetDevice(Callback<void()> cb);  // NOLINT(runtime/references)
+public:
+  explicit ResetDevice(Callback<void()> cb); // NOLINT(runtime/references)
 
-    // make the class non copyable
-    ResetDevice(ResetDevice&)            = delete;
-    ResetDevice& operator=(ResetDevice&) = delete;
+  // make the class non copyable
+  ResetDevice(ResetDevice &) = delete;
+  ResetDevice &operator=(ResetDevice &) = delete;
 
-
-
-    // data members
-    // instance representing the reset button
-    InterruptIn _resetButton;
+  // data members
+  // instance representing the reset button
+  InterruptIn _resetButton;
 };
 
-}  // namespace static_scheduling
+} // namespace static_scheduling_with_event

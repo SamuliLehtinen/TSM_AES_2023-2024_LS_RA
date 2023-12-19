@@ -29,28 +29,28 @@
 namespace static_scheduling {
 
 class ResetDevice {
-   public:
-    explicit ResetDevice(Timer& timer);  // NOLINT(runtime/references)
+public:
+  explicit ResetDevice(Timer &timer); // NOLINT(runtime/references)
 
-    // make the class non copyable
-    ResetDevice(ResetDevice&)            = delete;
-    ResetDevice& operator=(ResetDevice&) = delete;
+  // make the class non copyable
+  ResetDevice(ResetDevice &) = delete;
+  ResetDevice &operator=(ResetDevice &) = delete;
 
-    // method called for checking the reset status
-    bool checkReset();
+  // method called for checking the reset status
+  bool checkReset();
 
-    // for computing the response time
-    std::chrono::microseconds getPressTime();
+  // for computing the response time
+  std::chrono::microseconds getPressTime();
 
-   private:
-    // called when the button is pressed
-    void onRise();
+private:
+  // called when the button is pressed
+  void onRise();
 
-    // data members
-    // instance representing the reset button
-    InterruptIn _resetButton;
-    Timer& _timer;
-    std::chrono::microseconds _pressTime;
+  // data members
+  // instance representing the reset button
+  InterruptIn _resetButton;
+  Timer &_timer;
+  std::chrono::microseconds _pressTime;
 };
 
-}  // namespace static_scheduling
+} // namespace static_scheduling
