@@ -250,35 +250,32 @@ static void test_gear_multi_tasking_bike_system() {
     Thread thread;
     thread.start(callback(&bikeSystem, &multi_tasking::BikeSystem::start));
 
-    timer.start();
-
+    // Test onUp method and limit
     for (uint8_t i = 0; i <= bike_computer::kMaxGear; i++) {
-        auto startTime = timer.elapsed_time();
         uint8_t currentGear = bikeSystem.getCurrentGear();
         bikeSystem.getGearDevice().onUp();
 
-        ThisThread::sleep_for(50ms);
+        uint8_t nextGear = bikeSystem.getCurrentGear();
 
-        uint8_t newCurrentGear = bikeSystem.getCurrentGear();
         if (currentGear == bike_computer::kMaxGear) {
-            TEST_ASSERT_EQUAL_UINT8(currentGear, newCurrentGear);
+            TEST_ASSERT_EQUAL_UINT8(currentGear, nextGear);
         } else {
-            TEST_ASSERT_EQUAL_UINT8(currentGear + 1, newCurrentGear);
+            TEST_ASSERT_EQUAL_UINT8(currentGear + 1, nextGear);
         }
-
-        currentGear = bikeSystem.getCurrentGear();
+    }
+    
+    // Test onDown method and limit
+    for (uint8_t i = bike_computer::kMaxGear; i >= bike_computer::kMinGear; i--) {
+        uint8_t currentGear = bikeSystem.getCurrentGear();
         bikeSystem.getGearDevice().onDown();
 
-        ThisThread::sleep_for(50ms);
+        uint8_t nextGear = bikeSystem.getCurrentGear();
 
-        newCurrentGear = bikeSystem.getCurrentGear();
         if (currentGear == bike_computer::kMinGear) {
-            TEST_ASSERT_EQUAL_UINT8(currentGear, newCurrentGear);
+            TEST_ASSERT_EQUAL_UINT8(currentGear, nextGear);
         } else {
-            TEST_ASSERT_EQUAL_UINT8(currentGear - 1, newCurrentGear);
+            TEST_ASSERT_EQUAL_UINT8(currentGear - 1, nextGear);
         }
-
-        ThisThread::sleep_for(50ms);
     }
 
     bikeSystem.stop();
@@ -298,8 +295,8 @@ static Case cases[] = {
     Case("test bike system with event queue", test_bike_system_event_queue),
     Case("test bike system with event", test_bike_system_with_event),
     Case("test multi-tasking bike system", test_multi_tasking_bike_system),
-    Case("test reset multi-tasking bike system", test_reset_multi_tasking_bike_system)};
-
+    Case("test reset multi-tasking bike system", test_reset_multi_tasking_bike_system),
+    Case("test gear system", test_gear_multi_tasking_bike_system)};
 static Specification specification(greentea_setup, cases);
 
 int main() { return !Harness::run(specification); }
