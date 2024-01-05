@@ -21,7 +21,9 @@
       },
       "DISCO_H747I": {
         "mbed-trace.enable": true,
-        "mbed-trace.max-level": "TRACE_LEVEL_DEBUG"      
+        "mbed-trace.max-level": "TRACE_LEVEL_DEBUG",
+        "target.app_offset": "0x20000",
+        "target.bootloader_img":"./mbed-os-bootloader.bin"      
       }
     }
   }
