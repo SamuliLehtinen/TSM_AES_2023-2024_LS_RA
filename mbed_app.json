@@ -1,6 +1,8 @@
 {
     "macros": [
-      "MBED_CONF_MBED_TRACE_FEA_IPV6=0"
+      "MBED_CONF_MBED_TRACE_FEA_IPV6=0",
+      "MBED_BOOTLOADER_FLASH_BANK_SIZE=MBED_ROM_SIZE/2",
+      "USE_USB_SERIAL_UC=1"
     ],
     "config": {
       "main-stack-size": {
@@ -17,13 +19,16 @@
         "target.printf_lib":"minimal-printf",
         "platform.minimal-printf-enable-floating-point": true,
         "platform.minimal-printf-set-floating-point-max-decimals": 2,
-        "platform.all-stats-enabled": true
+        "platform.all-stats-enabled": true,
+        "update-client.storage-address": "(MBED_ROM_START + MBED_BOOTLOADER_FLASH_BANK_SIZE)",
+        "update-client.storage-size": "(MBED_BOOTLOADER_FLASH_BANK_SIZE)",
+        "update-client.storage-locations": 2  
       },
       "DISCO_H747I": {
         "mbed-trace.enable": true,
         "mbed-trace.max-level": "TRACE_LEVEL_DEBUG",
-        "target.app_offset": "0x20000",
-        "target.bootloader_img":"./mbed-os-bootloader.bin"      
+        "target.header_offset": "0x20000",
+        "target.bootloader_img":"./mbed-os-bootloader.bin"    
       }
     }
   }
