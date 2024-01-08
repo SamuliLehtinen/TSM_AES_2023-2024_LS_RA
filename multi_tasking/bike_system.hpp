@@ -39,6 +39,8 @@
 #include "pedal_device.hpp"
 #include "reset_device.hpp"
 
+#include "memory_leak.hpp"
+
 namespace multi_tasking {
 
 class BikeSystem {
@@ -127,6 +129,9 @@ class BikeSystem {
     
     // needed in mem code lab
     advembsof::MemoryLogger _memoryLogger;
+
+
+    MemoryLeak memoryLeak;
 
 };
 

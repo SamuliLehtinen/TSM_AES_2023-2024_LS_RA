@@ -49,8 +49,8 @@ BikeSystem::BikeSystem()
       _speedometer(_timer),
       _gearDevice(_eventQueue, callback(this, &BikeSystem::onGearChanged)),
       _pedalDevice(_eventQueue, callback(this, &BikeSystem::onRotationSpeedChanged)),
-      _resetDevice(callback(this, &BikeSystem::onReset)),
-      _memoryLogger() // Initialize _memoryLogger in the constructor initializer list
+      _resetDevice(callback(this, &BikeSystem::onReset))
+      //_memoryLogger() // Initialize _memoryLogger in the constructor initializer list
 {
     _speedometer.setGearSize(bike_computer::kMaxGearSize - 1);
 }
@@ -172,6 +172,12 @@ void BikeSystem::resetTask() {
 
 
 void BikeSystem::displayTask() {
+
+    memoryLeak.use();
+
+    //not working 
+    _memoryLogger.printRuntimeMemoryMap();
+
     auto taskStartTime = _timer.elapsed_time();
     auto _currentSpeed = _speedometer.getCurrentSpeed();
     auto _traveledDistance = _speedometer.getDistance();
@@ -183,6 +189,7 @@ void BikeSystem::displayTask() {
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kDisplayTask1Index, taskStartTime);
+
 }
 
 void BikeSystem::onGearChanged(uint8_t currentGear, uint8_t currentGearSize) {
