@@ -79,14 +79,20 @@ class BikeSystem {
    private:
     // private methods
     void init();
+    void onGearChanged(uint8_t currentGear, uint8_t currentGearSize);
+    void onRotationSpeedChanged(const std::chrono::milliseconds& pedalRotationTime);
     void gearTask();  
     void speedDistanceTask(); 
     void temperatureTask();
     void resetTask();
     void displayTask();
-    void cpuTask();
-    void onGearChanged(uint8_t currentGear, uint8_t currentGearSize);
-    void onRotationSpeedChanged(const std::chrono::milliseconds& pedalRotationTime);
+    //void cpuTask();
+
+    EventQueue _eventQueue;
+    EventQueue _eventQueueForISRs;
+
+    Thread _eventThread;
+
     // stop flag, used for stopping the super-loop (set in stop())
     bool _stopFlag = false;
      // used for computing the reset response time
@@ -117,13 +123,10 @@ class BikeSystem {
     // used for logging task info
     advembsof::TaskLogger _taskLogger;
 
-    EventQueue _eventQueue;
-    EventQueue _eventQueueForISRs;
-
-    Thread _eventThread;
+    
     
     // needed in mem code lab
-    //advembsof::MemoryLogger _memoryLogger;
+    advembsof::MemoryLogger _memoryLogger;
 
 };
 
