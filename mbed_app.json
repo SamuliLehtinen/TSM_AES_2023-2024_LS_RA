@@ -4,7 +4,7 @@
     ],
     "config": {
       "main-stack-size": {
-       "value": 4096
+       "value": 2048
       }
     },
     "target_overrides": {

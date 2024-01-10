@@ -40,7 +40,9 @@ static constexpr std::chrono::milliseconds kDisplayTaskComputationTime     = 200
 static constexpr std::chrono::milliseconds kTemperatureTaskPeriod          = 1600ms;
 static constexpr std::chrono::milliseconds kTemperatureTaskDelay           = 1100ms;
 static constexpr std::chrono::milliseconds kTemperatureTaskComputationTime = 100ms;
-static constexpr std::chrono::milliseconds kMajorCycleDuration             = 1600ms;
+#include "task_logger.hpp" // Include the header file for the TaskLogger class
+
+static constexpr std::chrono::milliseconds kMajorCycleDuration = 1600ms;
 
 BikeSystem::BikeSystem()
     : _eventThread(osPriorityNormal, OS_STACK_SIZE, nullptr, "isrThread"),
@@ -48,9 +50,10 @@ BikeSystem::BikeSystem()
       _gearDevice(_eventQueue, callback(this, &BikeSystem::onGearChanged)),
       _pedalDevice(_eventQueue, callback(this, &BikeSystem::onRotationSpeedChanged)),
       _resetDevice(callback(this, &BikeSystem::onReset))
-      {
-        _speedometer.setGearSize(bike_computer::kMaxGearSize -1);
-      }
+      //_memoryLogger() // Initialize _memoryLogger in the constructor initializer list
+{
+    _speedometer.setGearSize(bike_computer::kMaxGearSize - 1);
+}
       
 void BikeSystem::start() {
     tr_info("Starting Super-Loop without event handling");
@@ -69,7 +72,7 @@ void BikeSystem::start() {
 
     _eventThread.start(callback(&_eventQueueForISRs, &EventQueue::dispatch_forever));
 
-    //_memoryLogger.getAndPrintStatistics();
+    _memoryLogger.getAndPrintStatistics();
 
     _eventQueue.dispatch_forever();
 
@@ -116,7 +119,7 @@ void BikeSystem::init() {
     _taskLogger.enable(true);
 }
 
-void BikeSystem::gearTask() {
+/*void BikeSystem::gearTask() {
     auto taskStartTime = _timer.elapsed_time();
 
     _currentGear     = _gearDevice.getCurrentGear();
@@ -138,7 +141,7 @@ void BikeSystem::speedDistanceTask() {
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kSpeedTaskIndex, taskStartTime);  
-}
+}*/
 
 void BikeSystem::temperatureTask() {
     auto taskStartTime = _timer.elapsed_time();
@@ -169,6 +172,12 @@ void BikeSystem::resetTask() {
 
 
 void BikeSystem::displayTask() {
+
+    memoryLeak.use();
+
+    //not working 
+    _memoryLogger.printRuntimeMemoryMap();
+
     auto taskStartTime = _timer.elapsed_time();
     auto _currentSpeed = _speedometer.getCurrentSpeed();
     auto _traveledDistance = _speedometer.getDistance();
@@ -180,6 +189,7 @@ void BikeSystem::displayTask() {
 
     _taskLogger.logPeriodAndExecutionTime(
         _timer, advembsof::TaskLogger::kDisplayTask1Index, taskStartTime);
+
 }
 
 void BikeSystem::onGearChanged(uint8_t currentGear, uint8_t currentGearSize) {
